@@ -1,0 +1,19 @@
+{
+  "name": "cloudal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "node main"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "clui": "^0.3.6",
+    "figlet": "^1.2.0",
+    "opennebula": "^1.0.11",
+    "terminal-menu": "apocas/terminal-menu"
+  }
+}
