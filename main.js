@@ -1,16 +1,16 @@
-const blessed = require('blessed');
-const HomePage = require('./gui/home.js');
+const blessed = require("blessed"),
+  Screen = require("./lib/components/screen"),
+  HomePage = require("./gui/home.js"),
+  VmsListPage = require("./gui/vms-list.js");
 
-var screen = blessed.screen({
+const screen = blessed.screen({
   smartCSR: true
 });
-screen.title = 'Cloud computing';
+screen.title = "Cloud computing";
 
-screen.key(['escape', 'C-c'], (ch, key) => {
+screen.key(["escape", "C-c"], (ch, key) => {
   return process.exit(0);
 });
 
-const Home = new HomePage(screen);
-Home.render()
-
-
+// // const Home = new HomePage(Screen);
+const List = new VmsListPage(screen);
