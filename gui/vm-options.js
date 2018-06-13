@@ -1,8 +1,13 @@
 const blessed = require("blessed");
 const client = require("../api/open-nebula/opennebula");
+
 const VmCreatePage = require("./vm-create.js");
 const VmInfoPage = require("./vm-info.js");
 const VmEditPage = require("./vm-edit.js");
+const VmsListPage = require("./vms-list.js");
+const VmOptionsPage = require("./vm-options.js");
+
+const ConfirmPrompt = require("../lib/components/confirm-promp.js");
 
 module.exports = class VmOptionsPage {
   constructor(screen, index) {
@@ -10,6 +15,7 @@ module.exports = class VmOptionsPage {
     this.options = ["Create VM", "View info", "Edit", "Delete"];
     this.screen = screen;
     this.box = undefined;
+    this.list = undefined;
     this.init();
   }
 
@@ -22,22 +28,36 @@ module.exports = class VmOptionsPage {
     switch (index) {
       case 0:
         new VmCreatePage(this.screen);
-        this.box.destroy();
+        this.done();
         break;
       case 1:
         new VmInfoPage(this.screen, this.vmID);
-        this.box.destroy();
+        this.done();
         break;
       case 2:
         new VmEditPage(this.screen, this.vmID);
-        this.box.destroy();
+        this.done();
+        break;
+      case 3:
+        new ConfirmPrompt(
+          this.screen,
+          "Are you sure that you want to delete the VM?",
+          async () => {
+            await client.deleteVM(this.vmID);
+            new VmsListPage(this.screen, VmOptionsPage);
+            this.done();
+          }
+        );
         break;
     }
   }
-
+  done() {
+    this.box.destroy();
+    this.list.destroy();
+  }
   createList() {
     const t = this;
-    t.list = blessed.list({
+    this.list = blessed.list({
       align: "center",
       width: "50%",
       height: "50%",
@@ -51,17 +71,17 @@ module.exports = class VmOptionsPage {
         type: "line"
       }
     });
-    t.list.setItems(this.options);
+    this.list.setItems(this.options);
 
-    t.list.on("select", function(data) {
+    this.list.on("select", function(data) {
       const index = t.list.selected;
       t.optionsNavigation(index);
     });
 
-    this.box.append(t.list);
+    this.box.append(this.list);
     this.screen.render();
 
-    t.list.focus();
+    this.list.focus();
   }
 
   createBox() {
