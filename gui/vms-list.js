@@ -1,10 +1,10 @@
 const blessed = require("blessed");
 const client = require("../api/open-nebula/opennebula");
-const VmOptionsPage = require("./vm-options.js");
 
 module.exports = class VmsListPage {
-  constructor(screen) {
+  constructor(screen, redirectPage) {
     this.screen = screen;
+    this.redirectPage = redirectPage;
     this.box = undefined;
     this.list = undefined;
     this.VMs = [];
@@ -25,7 +25,7 @@ module.exports = class VmsListPage {
   }
 
   onVmSelect(index) {
-    const optionsPage = new VmOptionsPage(this.screen, this.VMs[index].ID);
+    const optionsPage = new this.redirectPage(this.screen, this.VMs[index].ID);
     this.box.destroy();
   }
 
