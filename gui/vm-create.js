@@ -10,36 +10,123 @@ module.exports = class VmCreatePage {
   }
 
   init() {
-    this.createBox();
+    this.createForm();
   }
 
-  onSubmit(data) {
-    // const optionsPage = new VmOptionsPage(this.screen, this.VMs[index].ID);
-    this.box.destroy();
-  }
+  // onSubmit(data) {
+  //   // const optionsPage = new VmOptionsPage(this.screen, this.VMs[index].ID);
+  // }
 
-  createBox() {
-    this.box = blessed.box({
-      top: "center",
+  createForm() {
+    var form = blessed.form({
+      parent: this.screen,
+      width: "90%",
       left: "center",
-      width: "50%",
-      height: "50%",
-      content: "VM Create",
-      tags: true,
-      border: {
-        type: "line"
+      keys: true,
+      vi: true
+    });
+
+    var label1 = blessed.text({
+      parent: form,
+      top: 2,
+      left: 0,
+      content: "NAME:"
+    });
+    var firstName = blessed.textbox({
+      parent: form,
+      name: "name",
+      top: 4,
+      left: 0,
+      height: 2,
+      inputOnFocus: true,
+      padding: {
+        right: 2,
+        left: 2
       },
       style: {
-        fg: "white",
-        bg: "magenta",
+        bg: "#ccc",
+        fg: "#000",
         border: {
-          fg: "#f0f0f0"
+          type: "line"
+        },
+        focus: {
+          fg: "white",
+          bg: "blue"
         }
       }
     });
 
-    // Append our box to the screen.
-    this.screen.append(this.box);
+    firstName.focus();
+
+    // Submit/Cancel buttons
+    var submit = blessed.button({
+      parent: form,
+      name: "submit",
+      content: "Submit",
+      top: 25,
+      right: 5,
+      shrink: true,
+      padding: {
+        top: 1,
+        right: 2,
+        bottom: 1,
+        left: 2
+      },
+      style: {
+        bold: true,
+        fg: "white",
+        bg: "green",
+        focus: {
+          inverse: true
+        }
+      }
+    });
+    var reset = blessed.button({
+      parent: form,
+      name: "reset",
+      content: "Reset",
+      top: 25,
+      right: 15,
+      shrink: true,
+      padding: {
+        top: 1,
+        right: 2,
+        bottom: 1,
+        left: 2
+      },
+      style: {
+        bold: true,
+        fg: "white",
+        bg: "red",
+        focus: {
+          inverse: true
+        }
+      }
+    });
+    // Info
+    var msg = blessed.message({
+      parent: this.screen,
+      top: 28,
+      left: 5,
+      style: {
+        italic: true,
+        fg: "green"
+      }
+    });
+
+    // Event management
+    submit.on("press", function() {
+      form.submit();
+    });
+    reset.on("press", function() {
+      form.reset();
+    });
+
+    form.on("submit", function(data) {
+      msg.setContent("Submitted.");
+      this.screen.render();
+    });
+    
     this.screen.render();
   }
 };
