@@ -1,11 +1,12 @@
 const blessed = require("blessed");
 const client = require("../api/open-nebula/opennebula");
 const VmOptionsPage = require("./vm-options.js");
+const history = require("../lib/configs/history.js");
 
 module.exports = class VmCreatePage {
-  constructor(screen) {
-    this.screen = screen;
-    this.box = undefined;
+  constructor(state) {
+    this.screen = state.screen;
+    this.form = undefined;
     this.init();
   }
 
@@ -18,7 +19,9 @@ module.exports = class VmCreatePage {
   // }
 
   createForm() {
-    var form = blessed.form({
+    const self = this;
+
+    this.form = blessed.form({
       parent: this.screen,
       width: "90%",
       left: "center",
@@ -27,13 +30,13 @@ module.exports = class VmCreatePage {
     });
 
     var label1 = blessed.text({
-      parent: form,
+      parent: this.form,
       top: 2,
       left: 0,
       content: "NAME:"
     });
     var firstName = blessed.textbox({
-      parent: form,
+      parent: this.form,
       name: "name",
       top: 4,
       left: 0,
@@ -56,11 +59,9 @@ module.exports = class VmCreatePage {
       }
     });
 
-    firstName.focus();
-
     // Submit/Cancel buttons
     var submit = blessed.button({
-      parent: form,
+      parent: this.form,
       name: "submit",
       content: "Submit",
       top: 25,
@@ -82,7 +83,7 @@ module.exports = class VmCreatePage {
       }
     });
     var reset = blessed.button({
-      parent: form,
+      parent: this.form,
       name: "reset",
       content: "Reset",
       top: 25,
@@ -116,17 +117,33 @@ module.exports = class VmCreatePage {
 
     // Event management
     submit.on("press", function() {
-      form.submit();
+      self.form.submit();
     });
     reset.on("press", function() {
-      form.reset();
+      self.form.reset();
     });
 
-    form.on("submit", function(data) {
+    this.form.on("submit", function(data) {
       msg.setContent("Submitted.");
-      this.screen.render();
+      self.screen.render();
     });
-    
+
+    this.form.key("z", (ch, key) => {
+      history.back();
+      self.done();
+    });
+
+    this.form.key("x", (ch, key) => {
+      history.foward();
+      self.done();
+    });
+
+    this.form.focus();
+    this.screen.render();
+  }
+
+  done() {
+    this.form.destroy();
     this.screen.render();
   }
 };

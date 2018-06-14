@@ -1,10 +1,11 @@
 const blessed = require("blessed");
 const client = require("../api/open-nebula/opennebula");
+const history = require("../lib/configs/history.js");
 
 module.exports = class VmsListPage {
-  constructor(screen, redirectPage) {
-    this.screen = screen;
-    this.redirectPage = redirectPage;
+  constructor(state) {
+    this.screen = state.screen;
+    this.redirectPage = state.redirectPage;
     this.box = undefined;
     this.list = undefined;
     this.VMs = [];
@@ -25,8 +26,12 @@ module.exports = class VmsListPage {
   }
 
   onVmSelect(index) {
-    const optionsPage = new this.redirectPage(this.screen, this.VMs[index].ID);
-    this.box.destroy();
+    const self = this;
+
+    const state = { screen: this.screen, id: this.VMs[index].ID }; //redirect para as options
+    history.redirect(this.redirectPage, state, function() {
+      self.done();
+    });
   }
 
   createList() {
@@ -49,6 +54,10 @@ module.exports = class VmsListPage {
     t.list.on("select", function(data) {
       const index = t.list.selected;
       t.onVmSelect(index);
+    });
+
+    this.list.key("z", (ch, key) => {
+      history.back();
     });
 
     this.box.append(t.list);
@@ -91,5 +100,10 @@ module.exports = class VmsListPage {
     // Append our box to the screen.
     this.screen.append(this.box);
     this.screen.render();
+  }
+
+  done() {
+    this.box.destroy();
+    this.list.destroy();
   }
 };
