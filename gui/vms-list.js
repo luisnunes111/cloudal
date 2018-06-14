@@ -10,6 +10,8 @@ module.exports = class VmsListPage {
     this.list = undefined;
     this.VMs = [];
     this.init();
+
+    this.done = this.done.bind(this);
   }
 
   init() {
@@ -35,8 +37,9 @@ module.exports = class VmsListPage {
   }
 
   createList() {
-    const t = this;
-    t.list = blessed.list({
+    const self = this;
+    this.list = blessed.list({
+      parent: this.box,
       align: "center",
       width: "50%",
       height: "50%",
@@ -51,19 +54,22 @@ module.exports = class VmsListPage {
       }
     });
 
-    t.list.on("select", function(data) {
-      const index = t.list.selected;
-      t.onVmSelect(index);
+    this.list.on("select", function(data) {
+      const index = self.list.selected;
+      self.onVmSelect(index);
     });
 
     this.list.key("z", (ch, key) => {
-      history.back();
+      history.back(self.done);
     });
 
-    this.box.append(t.list);
+    this.list.key("x", (ch, key) => {
+      history.foward(self.done);
+    });
+
     this.screen.render();
 
-    t.list.focus();
+    this.list.focus();
   }
 
   updateList(vms) {
@@ -105,5 +111,6 @@ module.exports = class VmsListPage {
   done() {
     this.box.destroy();
     this.list.destroy();
+    this.screen.render();
   }
 };

@@ -8,6 +8,8 @@ module.exports = class VmEditPage {
     this.screen = state.screen;
     this.box = undefined;
     this.init();
+
+    this.done = this.done.bind(this);
   }
 
   init() {
@@ -16,10 +18,12 @@ module.exports = class VmEditPage {
 
   onSubmit(data) {
     // const optionsPage = new VmOptionsPage(this.screen, this.VMs[index].ID);
-    this.box.destroy();
+   
   }
 
   createBox() {
+    const self = this;
+
     this.box = blessed.box({
       parent: this.screen,
       top: "center",
@@ -41,10 +45,19 @@ module.exports = class VmEditPage {
     });
 
     this.box.key("z", (ch, key) => {
-      history.back();
+      history.back(self.done);
     });
 
+    this.box.key("x", (ch, key) => {
+      history.foward(self.done);
+    });
+    
     this.box.focus();
+    this.screen.render();
+  }
+
+  done() {
+    this.box.destroy();
     this.screen.render();
   }
 };

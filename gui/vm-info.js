@@ -8,6 +8,8 @@ module.exports = class VmInfoPage {
     this.screen = state.screen;
     this.box = undefined;
     this.init();
+
+    this.done = this.done.bind(this);
   }
 
   init() {
@@ -15,6 +17,8 @@ module.exports = class VmInfoPage {
   }
 
   createBox() {
+    const self = this;
+    
     this.box = blessed.box({
       parent: this.screen,
       top: "center",
@@ -36,14 +40,19 @@ module.exports = class VmInfoPage {
     });
 
     this.box.key("z", (ch, key) => {
-      history.back();
+      history.back(self.done);
     });
 
     this.box.key("x", (ch, key) => {
-      history.foward();
+      history.foward(self.done);
     });
 
     this.box.focus();
+    this.screen.render();
+  }
+
+  done() {
+    this.box.destroy();
     this.screen.render();
   }
 };

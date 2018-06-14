@@ -8,6 +8,8 @@ module.exports = class VmCreatePage {
     this.screen = state.screen;
     this.form = undefined;
     this.init();
+
+    this.done = this.done.bind(this);
   }
 
   init() {
@@ -129,13 +131,11 @@ module.exports = class VmCreatePage {
     });
 
     this.form.key("z", (ch, key) => {
-      history.back();
-      self.done();
+      history.back(self.done);
     });
 
     this.form.key("x", (ch, key) => {
-      history.foward();
-      self.done();
+      history.foward(self.done);
     });
 
     this.form.focus();

@@ -63,12 +63,9 @@ module.exports = class VmOptionsPage {
         break;
     }
   }
-  done() {
-    this.box.destroy();
-    this.list.destroy();
-  }
+
   createList() {
-    const t = this;
+    const self = this;
     this.list = blessed.list({
       parent: this.box,
       align: "center",
@@ -87,12 +84,16 @@ module.exports = class VmOptionsPage {
     this.list.setItems(this.options);
 
     this.list.on("select", function(data) {
-      const index = t.list.selected;
-      t.optionsNavigation(index);
+      const index = self.list.selected;
+      self.optionsNavigation(index);
     });
 
     this.list.key("z", (ch, key) => {
-      history.back();
+      history.back(self.done);
+    });
+
+    this.list.key("x", (ch, key) => {
+      history.foward(self.done);
     });
 
     this.screen.render();
@@ -120,6 +121,12 @@ module.exports = class VmOptionsPage {
       }
     });
 
+    this.screen.render();
+  }
+
+  done() {
+    this.box.destroy();
+    this.list.destroy();
     this.screen.render();
   }
 };
