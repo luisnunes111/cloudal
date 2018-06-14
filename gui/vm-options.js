@@ -77,6 +77,7 @@ module.exports = class VmOptionsPage {
       mouse: true,
       selectedBg: "green",
       fg: "blue",
+      bg: "red",
       border: {
         type: "line"
       }
@@ -114,9 +115,9 @@ module.exports = class VmOptionsPage {
       },
       style: {
         fg: "white",
-        bg: "magenta",
+        bg: "blue",
         border: {
-          fg: "#f0f0f0"
+          fg: "#FFFFFF"
         }
       }
     });
