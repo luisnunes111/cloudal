@@ -30,8 +30,11 @@ module.exports = class VmsListPage {
   onVmSelect(index) {
     const self = this;
 
-    const state = { screen: this.screen, id: this.VMs[index].ID }; //redirect para as options
-    history.redirect(this.redirectPage, state, function() {
+    const state = {
+      screen: this.screen,
+      id: this.VMs[index].ID
+    }; //redirect para as options
+    history.redirect(this.redirectPage, state, function () {
       self.done();
     });
   }
@@ -55,7 +58,7 @@ module.exports = class VmsListPage {
       }
     });
 
-    this.list.on("select", function(data) {
+    this.list.on("select", function (data) {
       const index = self.list.selected;
       self.onVmSelect(index);
     });
@@ -86,6 +89,7 @@ module.exports = class VmsListPage {
 
   createBox() {
     this.box = blessed.box({
+      parent: this.screen,
       top: "center",
       left: "center",
       width: "50%",
@@ -104,20 +108,16 @@ module.exports = class VmsListPage {
       }
     });
 
-    // Append our box to the screen.
-    this.screen.append(this.box);
-
-    var icon = blessed.image({
-      parent: this.box,
-      top: 50,
-      left: 50,
-      type: 'overlay',
-      width: 'shrink',
-      height: 'shrink',
-      file: __dirname + '/wifi.PNG',
-      search: false
-    });
-
+    // var icon = blessed.image({
+    //   parent: this.box,
+    //   top: 50,
+    //   left: 50,
+    //   type: 'overlay',
+    //   width: 'shrink',
+    //   height: 'shrink',
+    //   file: __dirname + '/wifi.PNG',
+    //   search: false
+    // });
 
     this.screen.render();
   }
