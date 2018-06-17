@@ -22,8 +22,10 @@ module.exports = class VmCreatePage {
 
     this.form = blessed.form({
       parent: this.screen,
-      width: "90%",
-      left: "center",
+      top: "center",
+      right: 10,
+      width: "80%",
+      height: "70%",
       keys: true,
       vi: true
     });
@@ -106,10 +108,10 @@ module.exports = class VmCreatePage {
     });
 
     // Event management
-    this.submitButton.on("press", function() {
+    this.submitButton.on("press", function () {
       self.form.submit();
     });
-    this.cancelButton.on("press", function() {
+    this.cancelButton.on("press", function () {
       self.form.reset();
     });
 
@@ -120,8 +122,9 @@ module.exports = class VmCreatePage {
         TerminalNotification.error(this.screen, res.message);
       } else {
         history.redirect(
-          require("./index.js").VmsListPage,
-          { screen: this.screen },
+          require("./index.js").VmsListPage, {
+            screen: this.screen
+          },
           this.done,
           false
         );
@@ -131,8 +134,9 @@ module.exports = class VmCreatePage {
 
     this.form.on("reset", async () => {
       history.redirect(
-        require("./index.js").VmsListPage,
-        { screen: this.screen },
+        require("./index.js").VmsListPage, {
+          screen: this.screen
+        },
         this.done,
         false
       );
