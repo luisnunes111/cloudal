@@ -1,6 +1,8 @@
 const blessed = require("blessed");
 const client = require("../api/open-nebula/opennebula");
 const history = require("../lib/configs/history.js");
+const chalk = require('chalk');
+
 
 module.exports = class VmsListPage {
   constructor(state) {
@@ -44,18 +46,15 @@ module.exports = class VmsListPage {
     this.list = blessed.list({
       parent: this.box,
       align: "center",
-      width: "50%",
-      height: "50%",
+      width: "90%",
+      height: "90%",
       top: "center",
       left: "center",
       keys: true,
       mouse: true,
-      selectedBg: "green",
-      fg: "blue",
-      bg: "red",
-      border: {
-        type: "line"
-      }
+      selectedBg: "cyan",
+      fg: "white",
+      bg: "black"
     });
 
     this.list.on("select", function (data) {
@@ -81,7 +80,6 @@ module.exports = class VmsListPage {
       vms.map((vm, index) =>
         this.list.insertItem(index, "VM" + vm.ID.toString())
       );
-
       this.list.select(0);
       this.screen.render();
     }
@@ -92,19 +90,13 @@ module.exports = class VmsListPage {
       parent: this.screen,
       top: "center",
       left: "center",
-      width: "50%",
-      height: "50%",
-      content: "List page!",
+      width: "95%",
+      height: "90%",
+      content: chalk.white.bgCyanBright.bold('Virtual Machine List Page'),
       tags: true,
-      border: {
-        type: "line"
-      },
       style: {
         fg: "white",
-        bg: "blue",
-        border: {
-          fg: "#FFFFFF"
-        }
+        bg: "blue"
       }
     });
 

@@ -1,6 +1,7 @@
 const blessed = require("blessed");
 const client = require("../api/open-nebula/opennebula");
 const history = require("../lib/configs/history.js");
+const chalk = require('chalk');
 
 const VmCreatePage = require("./vm-create.js");
 const VmInfoPage = require("./vm-info.js");
@@ -30,19 +31,25 @@ module.exports = class VmOptionsPage {
     var self = this;
     switch (index) {
       case 0:
-        history.redirect(VmCreatePage, { screen: this.screen }, this.done);
+        history.redirect(VmCreatePage, {
+          screen: this.screen
+        }, this.done);
         break;
       case 1:
         history.redirect(
-          VmInfoPage,
-          { screen: this.screen, id: this.vmID },
+          VmInfoPage, {
+            screen: this.screen,
+            id: this.vmID
+          },
           this.done
         );
         break;
       case 2:
         history.redirect(
-          VmEditPage,
-          { screen: this.screen, id: this.vmID },
+          VmEditPage, {
+            screen: this.screen,
+            id: this.vmID
+          },
           this.done
         );
 
@@ -54,8 +61,10 @@ module.exports = class VmOptionsPage {
           async () => {
             await client.deleteVM(this.vmID);
             history.redirect(
-              VmsListPage,
-              { screen: this.screen, redirectPage: this.constructor },
+              VmsListPage, {
+                screen: this.screen,
+                redirectPage: this.constructor
+              },
               this.done
             );
           }
@@ -69,22 +78,20 @@ module.exports = class VmOptionsPage {
     this.list = blessed.list({
       parent: this.box,
       align: "center",
-      width: "50%",
-      height: "50%",
+      width: "90%",
+      height: "90%",
       top: "center",
       left: "center",
       keys: true,
       mouse: true,
-      selectedBg: "green",
-      fg: "blue",
-      bg: "red",
-      border: {
-        type: "line"
-      }
+      selectedBg: "cyan",
+      fg: "white",
+      bg: "black"
+
     });
     this.list.setItems(this.options);
 
-    this.list.on("select", function(data) {
+    this.list.on("select", function (data) {
       const index = self.list.selected;
       self.optionsNavigation(index);
     });
@@ -106,19 +113,15 @@ module.exports = class VmOptionsPage {
       parent: this.screen,
       top: "center",
       left: "center",
-      width: "50%",
-      height: "50%",
-      content: "VM " + this.vmID + " Options:",
+      width: "95%",
+      height: "90%",
+      content: chalk.white.bgCyanBright.bold("VM " + this.vmID + " Options:"),
       tags: true,
-      border: {
-        type: "line"
-      },
+
       style: {
         fg: "white",
         bg: "blue",
-        border: {
-          fg: "#FFFFFF"
-        }
+
       }
     });
 
