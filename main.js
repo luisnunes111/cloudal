@@ -1,7 +1,5 @@
 const blessed = require("blessed"),
-  Screen = require("./lib/components/screen"),
-  VmsListPage = require("./gui/vms-list.js"),
-  VmOptionsPage = require("./gui/vm-options.js");
+  VmsListPage = require("./gui/vms-list.js");
 
 const screen = blessed.screen({
   smartCSR: true
@@ -13,4 +11,4 @@ screen.key(["escape", "C-c"], (ch, key) => {
 });
 
 // // const Home = new HomePage(Screen);
-const List = new VmsListPage({ screen: screen, redirectPage: VmOptionsPage });
+const List = new VmsListPage({ screen: screen });

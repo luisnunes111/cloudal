@@ -11,13 +11,10 @@ exports.getAllVMs = function getAllVMs() {
         resolve(data);
       }
     });
-  });
+  }).catch(err => new Error(err));
 };
 
-exports.createVM = function createVM(name, templateId) {
-  templateId = templateId || 0;
-  name = name || "default";
-
+exports.createVM = function createVM(name = "default", templateId = 0) {
   return new Promise((resolve, reject) => {
     const template = one.getTemplate(templateId);
     template.instantiate(name, undefined, undefined, function(err, data) {
@@ -27,7 +24,7 @@ exports.createVM = function createVM(name, templateId) {
         resolve(data);
       }
     });
-  });
+  }).catch(err => new Error(err));
 };
 
 exports.getInfoVM = function getInfoVM(id) {
@@ -40,33 +37,46 @@ exports.getInfoVM = function getInfoVM(id) {
         resolve(data);
       }
     });
-  });
+  }).catch(err => new Error(err));
 };
 
-exports.shutdownVM = function shutdownVM(id) {
+exports.startVM = function startVM(id) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.action("poweroff", function(err, data) {
+    vm.action("resume", function(err, data) {
       if (err) {
         reject(err);
       } else {
         resolve(data);
       }
     });
-  });
+  }).catch(err => new Error(err));
 };
 
-exports.rebootVM = function rebootVM(id) {
+exports.shutdownVM = function shutdownVM(id, force = false) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.action("reboot", function(err, data) {
+    vm.action(force ? "poweroff-hard" : "poweroff", function(err, data) {
       if (err) {
         reject(err);
       } else {
         resolve(data);
       }
     });
-  });
+  }).catch(err => new Error(err));
+};
+
+exports.rebootVM = function rebootVM(id, force = false) {
+  return new Promise((resolve, reject) => {
+    const vm = one.getVM(id);
+    vm.action(force ? "reboot-hard" : "reboot", function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  }).catch(err => new Error(err));
 };
 
 exports.deleteVM = function deleteVM(id) {
@@ -79,5 +89,5 @@ exports.deleteVM = function deleteVM(id) {
         resolve(data);
       }
     });
-  });
+  }).catch(err => new Error(err));
 };
