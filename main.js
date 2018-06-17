@@ -4,8 +4,7 @@ const blessed = require("blessed"),
 const screen = blessed.screen({
   smartCSR: true
 });
-screen.title = "Cloud computing";
-
+screen.title = "Cloud Computing - VM Terminal";
 screen.key(["escape", "C-c"], (ch, key) => {
   return process.exit(0);
 });

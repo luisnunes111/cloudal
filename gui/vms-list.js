@@ -58,6 +58,7 @@ module.exports = class VmsListPage {
       mouse: true,
       selectedBg: "green",
       fg: "blue",
+      bg: "red",
       border: {
         type: "line"
       }
@@ -107,15 +108,28 @@ module.exports = class VmsListPage {
       },
       style: {
         fg: "white",
-        bg: "magenta",
+        bg: "blue",
         border: {
-          fg: "#f0f0f0"
+          fg: "#FFFFFF"
         }
       }
     });
 
     // Append our box to the screen.
     this.screen.append(this.box);
+
+    var icon = blessed.image({
+      parent: this.box,
+      top: 50,
+      left: 50,
+      type: 'overlay',
+      width: 'shrink',
+      height: 'shrink',
+      file: __dirname + '/wifi.PNG',
+      search: false
+    });
+
+
     this.screen.render();
   }
 
