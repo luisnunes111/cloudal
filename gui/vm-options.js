@@ -115,7 +115,7 @@ module.exports = class VmOptionsPage {
       left: "center",
       width: "95%",
       height: "90%",
-      content: chalk.white.bgCyanBright.bold("VM " + this.vmID + " Options:"),
+      content: chalk.white.bgCyanBright.bold("Virtual Machine " + this.vmID + " Options:"),
       tags: true,
 
       style: {

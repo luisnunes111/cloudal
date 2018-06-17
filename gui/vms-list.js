@@ -78,7 +78,7 @@ module.exports = class VmsListPage {
   updateList(vms) {
     if (vms) {
       vms.map((vm, index) =>
-        this.list.insertItem(index, "VM" + vm.ID.toString())
+        this.list.insertItem(index, "Virtual Machine " + vm.ID.toString())
       );
       this.list.select(0);
       this.screen.render();
@@ -99,17 +99,6 @@ module.exports = class VmsListPage {
         bg: "blue"
       }
     });
-
-    // var icon = blessed.image({
-    //   parent: this.box,
-    //   top: 50,
-    //   left: 50,
-    //   type: 'overlay',
-    //   width: 'shrink',
-    //   height: 'shrink',
-    //   file: __dirname + '/wifi.PNG',
-    //   search: false
-    // });
 
     this.screen.render();
   }
