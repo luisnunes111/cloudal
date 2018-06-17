@@ -1,6 +1,7 @@
 const blessed = require("blessed");
 const client = require("../api/open-nebula/opennebula");
 const history = require("../lib/configs/history.js");
+const TerminalNotification = require("../lib/components/notifications.js");
 
 module.exports = class VmInfoPage {
   constructor(state) {
@@ -14,11 +15,12 @@ module.exports = class VmInfoPage {
 
   init() {
     this.createBox();
+    TerminalNotification.success(this.screen, "Exemplo de uma notificação!");
   }
 
   createBox() {
     const self = this;
-    
+
     this.box = blessed.box({
       parent: this.screen,
       top: "center",

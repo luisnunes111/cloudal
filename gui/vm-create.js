@@ -1,7 +1,8 @@
 const blessed = require("blessed");
-const client = require("../api/open-nebula/opennebula");
-const VmOptionsPage = require("./vm-options.js");
+const client = require("../api/open-nebula/opennebula.js");
 const history = require("../lib/configs/history.js");
+
+const TerminalNotification = require("../lib/components/notifications.js");
 
 module.exports = class VmCreatePage {
   constructor(state) {
@@ -16,10 +17,6 @@ module.exports = class VmCreatePage {
     this.createForm();
   }
 
-  // onSubmit(data) {
-  //   // const optionsPage = new VmOptionsPage(this.screen, this.VMs[index].ID);
-  // }
-
   createForm() {
     const self = this;
 
@@ -31,13 +28,14 @@ module.exports = class VmCreatePage {
       vi: true
     });
 
-    var label1 = blessed.text({
+    this.nameLabel = blessed.text({
       parent: this.form,
       top: 2,
       left: 0,
       content: "NAME:"
     });
-    var firstName = blessed.textbox({
+
+    this.nameInput = blessed.textbox({
       parent: this.form,
       name: "name",
       top: 4,
@@ -62,7 +60,7 @@ module.exports = class VmCreatePage {
     });
 
     // Submit/Cancel buttons
-    var submit = blessed.button({
+    this.submitButton = blessed.button({
       parent: this.form,
       name: "submit",
       content: "Submit",
@@ -84,10 +82,10 @@ module.exports = class VmCreatePage {
         }
       }
     });
-    var reset = blessed.button({
+    this.cancelButton = blessed.button({
       parent: this.form,
-      name: "reset",
-      content: "Reset",
+      name: "cancel",
+      content: "Cancel",
       top: 25,
       right: 15,
       shrink: true,
@@ -106,28 +104,38 @@ module.exports = class VmCreatePage {
         }
       }
     });
-    // Info
-    var msg = blessed.message({
-      parent: this.screen,
-      top: 28,
-      left: 5,
-      style: {
-        italic: true,
-        fg: "green"
-      }
-    });
 
     // Event management
-    submit.on("press", function() {
+    this.submitButton.on("press", function() {
       self.form.submit();
     });
-    reset.on("press", function() {
+    this.cancelButton.on("press", function() {
       self.form.reset();
     });
 
-    this.form.on("submit", function(data) {
-      msg.setContent("Submitted.");
-      self.screen.render();
+    this.form.on("submit", async data => {
+      const name = data.name === "" ? undefined : data.name;
+      const res = await client.createVM(name);
+      if (res instanceof Error) {
+        TerminalNotification.error(this.screen, res.message);
+      } else {
+        history.redirect(
+          require("./index.js").VmsListPage,
+          { screen: this.screen },
+          this.done,
+          false
+        );
+        TerminalNotification.success(this.screen, "VM created successfully");
+      }
+    });
+
+    this.form.on("reset", async () => {
+      history.redirect(
+        require("./index.js").VmsListPage,
+        { screen: this.screen },
+        this.done,
+        false
+      );
     });
 
     this.form.key("z", (ch, key) => {
@@ -144,6 +152,10 @@ module.exports = class VmCreatePage {
 
   done() {
     this.form.destroy();
+    // this.cancelButton.destroy();
+    // this.submitButton.destroy();
+    // this.nameLabel.destroy();
+    // this.nameInput.destroy();
     this.screen.render();
   }
 };

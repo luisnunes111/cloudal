@@ -2,7 +2,7 @@ const blessed = require("blessed");
 const client = require("../api/open-nebula/opennebula");
 const history = require("../lib/configs/history.js");
 
-module.exports = class VmEditPage {
+module.exports = class VmDashboardPage {
   constructor(state) {
     this.vmID = state.id;
     this.screen = state.screen;
@@ -16,11 +16,6 @@ module.exports = class VmEditPage {
     this.createBox();
   }
 
-  onSubmit(data) {
-    // const optionsPage = new VmOptionsPage(this.screen, this.VMs[index].ID);
-   
-  }
-
   createBox() {
     const self = this;
 
@@ -30,7 +25,7 @@ module.exports = class VmEditPage {
       left: "center",
       width: "50%",
       height: "50%",
-      content: "VM Edit",
+      content: "Dashboard",
       tags: true,
       border: {
         type: "line"
@@ -51,7 +46,7 @@ module.exports = class VmEditPage {
     this.box.key("x", (ch, key) => {
       history.foward(self.done);
     });
-    
+
     this.box.focus();
     this.screen.render();
   }
