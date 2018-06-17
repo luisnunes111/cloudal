@@ -3,11 +3,11 @@ const client = require("../api/open-nebula/opennebula");
 const history = require("../lib/configs/history.js");
 const chalk = require('chalk');
 
+// const VmCreatePage = require("./vm-create.js");
 
 module.exports = class VmsListPage {
   constructor(state) {
     this.screen = state.screen;
-    this.redirectPage = state.redirectPage;
     this.box = undefined;
     this.list = undefined;
     this.VMs = [];
@@ -32,13 +32,23 @@ module.exports = class VmsListPage {
   onVmSelect(index) {
     const self = this;
 
-    const state = {
-      screen: this.screen,
-      id: this.VMs[index].ID
-    }; //redirect para as options
-    history.redirect(this.redirectPage, state, function () {
-      self.done();
-    });
+    //if NEW option was selected
+    if (index === 0) {
+      const state = {
+        screen: this.screen
+      }; //redirect para o create
+      history.redirect(require("./index.js").VmCreatePage, state, function () {
+        self.done();
+      });
+    } else {
+      const state = {
+        screen: this.screen,
+        id: this.VMs[index - 1].ID
+      }; //redirect para as options
+      history.redirect(require("./index.js").VmOptionsPage, state, function () {
+        self.done();
+      });
+    }
   }
 
   createList() {
@@ -54,8 +64,9 @@ module.exports = class VmsListPage {
       mouse: true,
       selectedBg: "cyan",
       fg: "white",
-      bg: "black"
+      bg: "grey"
     });
+    this.list.insertItem(0, "------------NEW------------");
 
     this.list.on("select", function (data) {
       const index = self.list.selected;
@@ -78,10 +89,11 @@ module.exports = class VmsListPage {
   updateList(vms) {
     if (vms) {
       vms.map((vm, index) =>
-        this.list.insertItem(index, "Virtual Machine " + vm.ID.toString())
+        this.list.insertItem(index + 1, "VM" + vm.ID.toString())
       );
       this.list.select(0);
       this.screen.render();
+      this.list.focus();
     }
   }
 
@@ -89,9 +101,9 @@ module.exports = class VmsListPage {
     this.box = blessed.box({
       parent: this.screen,
       top: "center",
-      left: "center",
-      width: "95%",
-      height: "90%",
+      right: 10,
+      width: "80%",
+      height: "75%",
       content: chalk.white.bgCyanBright.bold('Virtual Machine List Page'),
       tags: true,
       style: {

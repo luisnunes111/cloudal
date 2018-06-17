@@ -3,18 +3,22 @@ const client = require("../api/open-nebula/opennebula");
 const history = require("../lib/configs/history.js");
 const chalk = require('chalk');
 
-const VmCreatePage = require("./vm-create.js");
-const VmInfoPage = require("./vm-info.js");
-const VmEditPage = require("./vm-edit.js");
-const VmsListPage = require("./vms-list.js");
-
-const ConfirmPrompt = require("../lib/components/confirm-prompt.js");
+const ConfirmPrompt = require("../lib/components/prompts/confirm-prompt.js");
+const VmOptionsPrompt = require("../lib/components/prompts/vm-options-prompt.js");
+const TerminalNotification = require("../lib/components/notifications.js");
 
 module.exports = class VmOptionsPage {
   constructor(state) {
-    this.vmID = state.id;
+    this.vmID = parseInt(state.id);
     this.screen = state.screen;
-    this.options = ["Create VM", "View info", "Edit", "Delete"];
+    this.options = [
+      "View info",
+      "Dashboard",
+      "Start",
+      "Reboot",
+      "Shutdown",
+      "Delete"
+    ];
     this.box = undefined;
     this.list = undefined;
     this.init();
@@ -28,16 +32,19 @@ module.exports = class VmOptionsPage {
   }
 
   optionsNavigation(index) {
-    var self = this;
     switch (index) {
       case 0:
-        history.redirect(VmCreatePage, {
-          screen: this.screen
-        }, this.done);
+        history.redirect(
+          require("./index.js").VmInfoPage, {
+            screen: this.screen,
+            id: this.vmID
+          },
+          this.done
+        );
         break;
       case 1:
         history.redirect(
-          VmInfoPage, {
+          require("./index.js").VmDashboardPage, {
             screen: this.screen,
             id: this.vmID
           },
@@ -45,31 +52,98 @@ module.exports = class VmOptionsPage {
         );
         break;
       case 2:
-        history.redirect(
-          VmEditPage, {
-            screen: this.screen,
-            id: this.vmID
-          },
-          this.done
-        );
-
-        break;
-      case 3:
         new ConfirmPrompt(
           this.screen,
-          "Are you sure that you want to delete the VM?",
-          async () => {
-            await client.deleteVM(this.vmID);
-            history.redirect(
-              VmsListPage, {
-                screen: this.screen,
-                redirectPage: this.constructor
-              },
-              this.done
-            );
-          }
+          "Are you sure that you want to START the VM?",
+          this.startVM.bind(this)
         );
         break;
+      case 3:
+        new VmOptionsPrompt(
+          this.screen,
+          "Are you sure that you want to REBOOT the VM?",
+          this.rebootVM.bind(this),
+          this.rebootVM.bind(this)
+        );
+        break;
+      case 4:
+        new VmOptionsPrompt(
+          this.screen,
+          "Are you sure that you want to SHUTDOWN the VM?",
+          this.shutdownVM.bind(this),
+          this.shutdownVM.bind(this)
+        );
+        break;
+      case 5:
+        new ConfirmPrompt(
+          this.screen,
+          "Are you sure that you want to DELETE the VM?",
+          this.deleteVM.bind(this)
+        );
+        break;
+    }
+  }
+
+  async startVM() {
+    const res = await client.startVM(this.vmID);
+    if (res instanceof Error) {
+      TerminalNotification.error(this.screen, res.message);
+    } else {
+      history.redirect(
+        require("./index.js").VmsListPage, {
+          screen: this.screen
+        },
+        this.done,
+        false
+      );
+      TerminalNotification.success(this.screen, "VM started successfully");
+    }
+  }
+
+  async rebootVM(force) {
+    const res = await client.rebootVM(this.vmID, force);
+    if (res instanceof Error) {
+      TerminalNotification.error(this.screen, res.message);
+    } else {
+      history.redirect(
+        require("./index.js").VmsListPage, {
+          screen: this.screen
+        },
+        this.done,
+        false
+      );
+      TerminalNotification.success(this.screen, "VM rebooted successfully");
+    }
+  }
+
+  async shutdownVM(force) {
+    const res = await client.shutdownVM(this.vmID, force);
+    if (res instanceof Error) {
+      TerminalNotification.error(this.screen, res.message);
+    } else {
+      history.redirect(
+        require("./index.js").VmsListPage, {
+          screen: this.screen
+        },
+        this.done,
+        false
+      );
+      TerminalNotification.success(this.screen, "VM shutted down successfully");
+    }
+  }
+
+  async deleteVM() {
+    const res = await client.deleteVM(this.vmID);
+    if (res instanceof Error) {
+      TerminalNotification.error(this.screen, res.message);
+    } else {
+      history.redirect(
+        require("./index.js").VmsListPage, {
+          screen: this.screen
+        },
+        this.done,
+        false
+      );
     }
   }
 
@@ -86,7 +160,7 @@ module.exports = class VmOptionsPage {
       mouse: true,
       selectedBg: "cyan",
       fg: "white",
-      bg: "black"
+      bg: "grey"
 
     });
     this.list.setItems(this.options);
@@ -112,9 +186,9 @@ module.exports = class VmOptionsPage {
     this.box = blessed.box({
       parent: this.screen,
       top: "center",
-      left: "center",
-      width: "95%",
-      height: "90%",
+      right: 10,
+      width: "80%",
+      height: "75%",
       content: chalk.white.bgCyanBright.bold("Virtual Machine " + this.vmID + " Options:"),
       tags: true,
 
