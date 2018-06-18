@@ -1,6 +1,7 @@
 const blessed = require("blessed"),
   VmsListPage = require("./gui/vms-list.js"),
   Layout = require("./lib/components/layout.js"),
+  HomePage = require("./gui/home.js"),
   chalk = require('chalk');
 
 const screen = blessed.screen({
@@ -16,6 +17,6 @@ screen.key(["escape", "C-c"], (ch, key) => {
 
 const layout = new Layout(screen);
 
-const List = new VmsListPage({
+const home = new HomePage({
   screen: screen
 });
