@@ -2,12 +2,15 @@ const blessed = require("blessed");
 const contrib = require("blessed-contrib");
 const client = require("../api/open-nebula/opennebula");
 const history = require("../lib/configs/history.js");
-const chalk = require('chalk');
+const chalk = require("chalk");
+
+const globalState = require("./../main.js");
 
 module.exports = class VmDashboardPage {
   constructor(state) {
     this.vmID = state.id;
     this.screen = state.screen;
+    this.layout = state.layout;
 
     this.box = undefined;
     this.infoBox = undefined;
@@ -58,29 +61,36 @@ module.exports = class VmDashboardPage {
     const templateMemory = parseInt(this.vmInfo.template.memory);
 
     const lastStat = this.stats[this.stats.length - 1];
-    const cpu = parseFloat(lastStat.cpu);
-    const memory = ((parseInt(lastStat.memory) / 1024) * 100) / templateMemory;
+    if (lastStat != null) {
+      const cpu = parseFloat(lastStat.cpu);
+      const memory =
+        ((parseInt(lastStat.memory) / 1024) * 100) / templateMemory;
 
-    this.cpuDonut.setData([{ percent: cpu, label: "CPU", color: "cyan" }]);
-    this.memoryDonut.setData([
-      { percent: memory, label: "Memory", color: "cyan" }
-    ]);
-
+      this.cpuDonut.setData([{ percent: cpu, label: "CPU", color: "cyan" }]);
+      this.memoryDonut.setData([
+        { percent: memory, label: "Memory", color: "cyan" }
+      ]);
+    }
     // this.networkGraph.setData([net_tx, net_rx]);
     this.screen.render();
   }
 
   updateVmInfo() {
     const lastStat = this.stats[this.stats.length - 1];
-    this.info.cpuInfo.content = lastStat.cpu;
-    this.info.memoryInfo.content = this.memoryFormat(parseInt(lastStat.memory));
-    this.info.diskInfo.content = "0";
+    if (lastStat != null) {
+      this.info.cpuInfo.content = lastStat.cpu;
+      this.info.memoryInfo.content = this.memoryFormat(
+        parseInt(lastStat.memory)
+      );
+      this.info.diskInfo.content = "0";
+      this.info.lastUpdateInfo.content = new Date(
+        parseInt(lastStat.time) * 1000
+      ).toLocaleString();
+    }
+
     this.info.nameInfo.content = this.vmInfo.name;
     this.info.templateIdInfo.content = this.vmInfo.template.id;
     this.info.vmIdInfo.content = this.vmInfo.id;
-    this.info.lastUpdateInfo.content = new Date(
-      parseInt(lastStat.time) * 1000
-    ).toLocaleString();
     this.info.statusInfo.content = this.vmInfo.status;
     this.info.statusInfo.style = {
       ...this.info.statusInfo.style,
@@ -118,10 +128,10 @@ module.exports = class VmDashboardPage {
   createVmInfo() {
     this.infoBox = blessed.box({
       parent: this.box,
-      top: 20,
+      top: "70%",
       left: 0,
       width: "98%",
-      height: 10,
+      height: "30%",
       border: {
         type: "line"
       },
@@ -135,22 +145,22 @@ module.exports = class VmDashboardPage {
     });
 
     // state, memory, cpu, disk?
-    this.label(1, 6, "CPU");
-    this.info.cpuInfo = this.label(2, 6, "");
-    this.label(1, 18, "MEMORY");
-    this.info.memoryInfo = this.label(2, 18, "");
-    this.label(1, 35, "DISK SPACE");
-    this.info.diskInfo = this.label(2, 37, "");
-    this.info.statusInfo = this.vmStatusBox(1, 55, "runnin");
+    this.label(0, 6, "CPU");
+    this.info.cpuInfo = this.label(1, 6, "");
+    this.label(0, 18, "MEMORY");
+    this.info.memoryInfo = this.label(1, 18, "");
+    this.label(0, 35, "DISK SPACE");
+    this.info.diskInfo = this.label(1, 37, "");
+    this.info.statusInfo = this.vmStatusBox(0, 55, "none");
 
-    this.label(5, 6, "Name");
-    this.info.nameInfo = this.label(6, 6, "");
-    this.label(5, 18, "Template ID");
-    this.info.templateIdInfo = this.label(6, 18, "");
-    this.label(5, 40, "VM ID");
-    this.info.vmIdInfo = this.label(6, 40, "");
-    this.label(5, 55, "Last update");
-    this.info.lastUpdateInfo = this.label(6, 55, "");
+    this.label(3, 6, "Name");
+    this.info.nameInfo = this.label(4, 6, "");
+    this.label(3, 18, "Template ID");
+    this.info.templateIdInfo = this.label(4, 18, "");
+    this.label(3, 40, "VM ID");
+    this.info.vmIdInfo = this.label(4, 40, "");
+    this.label(3, 55, "Last update");
+    this.info.lastUpdateInfo = this.label(4, 55, "");
 
     this.screen.render();
   }
@@ -222,7 +232,7 @@ module.exports = class VmDashboardPage {
     this.cpuDonut = contrib.donut({
       top: 0,
       right: 0,
-      height: 10,
+      height: "35%",
       width: "20%",
       radius: 8,
       arcWidth: 3,
@@ -232,9 +242,9 @@ module.exports = class VmDashboardPage {
     });
 
     this.memoryDonut = contrib.donut({
-      top: 10,
+      top: "35%",
       right: 0,
-      height: 10,
+      height: "35%",
       width: "20%",
       radius: 8,
       arcWidth: 3,
@@ -251,7 +261,7 @@ module.exports = class VmDashboardPage {
   createNetworkGraph() {
     this.networkGraph = contrib.line({
       width: "79%",
-      height: 20,
+      height: "70%",
       top: 0,
       left: 0,
       style: {
@@ -283,16 +293,15 @@ module.exports = class VmDashboardPage {
     const self = this;
 
     this.box = blessed.box({
-      parent: this.screen,
-      top: "center",
-      right: 10,
-      width: "80%",
-      height: "75%",
-      content: chalk.white.bgCyanBright.bold("Dashboard:"),
+      parent: this.layout,
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
       tags: true,
       style: {
         fg: "white",
-        bg: "cyan",
+        bg: "black"
       }
     });
 

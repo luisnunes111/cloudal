@@ -1,13 +1,14 @@
 const blessed = require("blessed");
 const client = require("../api/open-nebula/opennebula");
 const history = require("../lib/configs/history.js");
-const chalk = require('chalk');
+const chalk = require("chalk");
 
 // const VmCreatePage = require("./vm-create.js");
 
 module.exports = class VmsListPage {
   constructor(state) {
     this.screen = state.screen;
+    this.layout = state.layout;
     this.box = undefined;
     this.list = undefined;
     this.VMs = [];
@@ -35,17 +36,19 @@ module.exports = class VmsListPage {
     //if NEW option was selected
     if (index === 0) {
       const state = {
-        screen: this.screen
+        screen: this.screen,
+        layout: this.layout
       }; //redirect para o create
-      history.redirect(require("./index.js").VmCreatePage, state, function () {
+      history.redirect(require("./index.js").VmCreatePage, state, function() {
         self.done();
       });
     } else {
       const state = {
         screen: this.screen,
+        layout: this.layout,
         id: this.VMs[index - 1].ID
       }; //redirect para as options
-      history.redirect(require("./index.js").VmOptionsPage, state, function () {
+      history.redirect(require("./index.js").VmOptionsPage, state, function() {
         self.done();
       });
     }
@@ -68,7 +71,7 @@ module.exports = class VmsListPage {
     });
     this.list.insertItem(0, "------------NEW------------");
 
-    this.list.on("select", function (data) {
+    this.list.on("select", function(data) {
       const index = self.list.selected;
       self.onVmSelect(index);
     });
@@ -104,7 +107,7 @@ module.exports = class VmsListPage {
       right: 10,
       width: "80%",
       height: "75%",
-      content: chalk.white.bgCyanBright.bold('Virtual Machine List Page'),
+      content: chalk.white.bgCyanBright.bold("Virtual Machine List Page"),
       tags: true,
       style: {
         fg: "white",

@@ -1,8 +1,6 @@
 const blessed = require("blessed"),
-  VmsListPage = require("./gui/vms-list.js"),
   Layout = require("./lib/components/layout.js"),
-  HomePage = require("./gui/home.js"),
-  chalk = require('chalk');
+  history = require("./lib/configs/history.js");
 
 const screen = blessed.screen({
   smartCSR: true
@@ -12,11 +10,9 @@ screen.key(["escape", "C-c"], (ch, key) => {
   return process.exit(0);
 });
 
-
-// // const Home = new HomePage(Screen);
-
 const layout = new Layout(screen);
 
-const home = new HomePage({
-  screen: screen
+history.initialize(require("./gui/index").Home, {
+  screen: screen,
+  layout: layout.mainBox
 });
