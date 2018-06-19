@@ -13,7 +13,7 @@ exports.getAllVMs = function getAllVMs() {
     });
   }).catch(err => new Error(err));
 };
-``
+
 exports.createVM = function createVM(name = "default", ram, vcpu, templateId = 0) {
   return new Promise((resolve, reject) => {
     const template = one.getTemplate(templateId);
