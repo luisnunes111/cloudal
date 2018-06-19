@@ -4,7 +4,7 @@ const one = new OpenNebula("oneadmin:opennebula", "http://localhost:2633/RPC2");
 
 exports.getAllVMs = function getAllVMs() {
   return new Promise((resolve, reject) => {
-    one.getVMs(function(err, data) {
+    one.getVMs(function (err, data) {
       if (err) {
         reject(err);
       } else {
@@ -13,14 +13,16 @@ exports.getAllVMs = function getAllVMs() {
     });
   }).catch(err => new Error(err));
 };
-
-exports.createVM = function createVM(name = "default", templateId = 0) {
+``
+exports.createVM = function createVM(name = "default", ram, vcpu, templateId = 0) {
   return new Promise((resolve, reject) => {
     const template = one.getTemplate(templateId);
-    template.instantiate(name, undefined, undefined, function(err, data) {
+    const context = 'CONTEXT=[NETWORK="YES", SSH_PUBLIC_KEY="root[SSH_PUBLIC_KEY]"]\n';
+    template.instantiate(name, undefined, 'MEMORY="' + (ram || 1024) + '"\nVCPU="' + (vcpu || 1) + '"\n ' + context, function (err, data) {
       if (err) {
         reject(err);
       } else {
+        //data.deploy("default",-1,);
         resolve(data);
       }
     });
@@ -30,7 +32,7 @@ exports.createVM = function createVM(name = "default", templateId = 0) {
 exports.getInfoVM = function getInfoVM(id) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.info(function(err, data) {
+    vm.info(function (err, data) {
       if (err) {
         reject(err);
       } else {
@@ -68,7 +70,7 @@ exports.getInfoVM = function getInfoVM(id) {
 exports.startVM = function startVM(id) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.action("resume", function(err, data) {
+    vm.action("resume", function (err, data) {
       if (err) {
         reject(err);
       } else {
@@ -81,7 +83,7 @@ exports.startVM = function startVM(id) {
 exports.shutdownVM = function shutdownVM(id, force = false) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.action(force ? "poweroff-hard" : "poweroff", function(err, data) {
+    vm.action(force ? "poweroff-hard" : "poweroff", function (err, data) {
       if (err) {
         reject(err);
       } else {
@@ -94,7 +96,7 @@ exports.shutdownVM = function shutdownVM(id, force = false) {
 exports.rebootVM = function rebootVM(id, force = false) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.action(force ? "reboot-hard" : "reboot", function(err, data) {
+    vm.action(force ? "reboot-hard" : "reboot", function (err, data) {
       if (err) {
         reject(err);
       } else {
@@ -107,7 +109,7 @@ exports.rebootVM = function rebootVM(id, force = false) {
 exports.deleteVM = function deleteVM(id) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(parseInt(id));
-    vm.action("delete", function(err, data) {
+    vm.action("delete", function (err, data) {
       if (err) {
         reject(err);
       } else {
@@ -121,7 +123,7 @@ exports.monitoringVM = function monitoringVM(id) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(parseInt(id));
 
-    vm.monitoring(function(err, data) {
+    vm.monitoring(function (err, data) {
       if (err) {
         //'Error fetching VM statistics'
         reject(err);

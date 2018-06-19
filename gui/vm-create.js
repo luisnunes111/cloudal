@@ -61,6 +61,68 @@ module.exports = class VmCreatePage {
       }
     });
 
+    this.ramLabel = blessed.text({
+      parent: this.form,
+      top: 6,
+      left: 0,
+      content: "RAM:"
+    });
+
+    this.ramInput = blessed.textbox({
+      parent: this.form,
+      name: "ram",
+      top: 8,
+      left: 0,
+      height: 2,
+      inputOnFocus: true,
+      padding: {
+        right: 2,
+        left: 2
+      },
+      style: {
+        bg: "#ccc",
+        fg: "#000",
+        border: {
+          type: "line"
+        },
+        focus: {
+          fg: "white",
+          bg: "blue"
+        }
+      }
+    });
+
+    this.vcpuLabel = blessed.text({
+      parent: this.form,
+      top: 10,
+      left: 0,
+      content: "VCPU:"
+    });
+
+    this.vcpuInput = blessed.textbox({
+      parent: this.form,
+      name: "vcpu",
+      top: 12,
+      left: 0,
+      height: 2,
+      inputOnFocus: true,
+      padding: {
+        right: 2,
+        left: 2
+      },
+      style: {
+        bg: "#ccc",
+        fg: "#000",
+        border: {
+          type: "line"
+        },
+        focus: {
+          fg: "white",
+          bg: "blue"
+        }
+      }
+    });
+
     // Submit/Cancel buttons
     this.submitButton = blessed.button({
       parent: this.form,
@@ -117,7 +179,10 @@ module.exports = class VmCreatePage {
 
     this.form.on("submit", async data => {
       const name = data.name === "" ? undefined : data.name;
-      const res = await client.createVM(name);
+      const ram = data.ram === "" ? undefined : data.ram;
+      const vcpu = data.vcpu === "" ? undefined : data.vcpu;
+
+      const res = await client.createVM(name, ram, vcpu);
       if (res instanceof Error) {
         TerminalNotification.error(this.screen, res.message);
       } else {
