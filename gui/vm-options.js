@@ -18,6 +18,7 @@ module.exports = class VmOptionsPage {
       "Start",
       "Reboot",
       "Shutdown",
+      "Migrate",
       "Delete"
     ];
     this.box = undefined;
@@ -36,8 +37,7 @@ module.exports = class VmOptionsPage {
     switch (index) {
       case 0:
         history.redirect(
-          require("./index.js").VmInfoPage,
-          {
+          require("./index.js").VmInfoPage, {
             screen: this.screen,
             layout: this.layout,
             id: this.vmID
@@ -47,8 +47,7 @@ module.exports = class VmOptionsPage {
         break;
       case 1:
         history.redirect(
-          require("./index.js").VmDashboardPage,
-          {
+          require("./index.js").VmDashboardPage, {
             screen: this.screen,
             layout: this.layout,
             id: this.vmID
@@ -82,6 +81,14 @@ module.exports = class VmOptionsPage {
       case 5:
         new ConfirmPrompt(
           this.screen,
+          "Are you sure that you want to MIGRATE the VM?",
+          this.migrateVM.bind(this),
+          this.migrateVM.bind(this)
+        );
+        break;
+      case 6:
+        new ConfirmPrompt(
+          this.screen,
           "Are you sure that you want to DELETE the VM?",
           this.deleteVM.bind(this)
         );
@@ -95,8 +102,7 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("./index.js").VmsListPage,
-        {
+        require("./index.js").VmsListPage, {
           screen: this.screen,
           layout: this.layout
         },
@@ -113,8 +119,7 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("./index.js").VmsListPage,
-        {
+        require("./index.js").VmsListPage, {
           screen: this.screen,
           layout: this.layout
         },
@@ -131,8 +136,7 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("./index.js").VmsListPage,
-        {
+        require("./index.js").VmsListPage, {
           screen: this.screen,
           layout: this.layout
         },
@@ -143,14 +147,30 @@ module.exports = class VmOptionsPage {
     }
   }
 
+  async migrateVM(live) {
+    const res = await client.migrateVM(this.vmID, live);
+    if (res instanceof Error) {
+      TerminalNotification.error(this.screen, res.message);
+    } else {
+      history.redirect(
+        require("./index.js").VmsListPage, {
+          screen: this.screen,
+          layout: this.layout
+        },
+        this.done,
+        false
+      );
+      TerminalNotification.success(this.screen, "VM migrated successfully");
+    }
+  }
+
   async deleteVM() {
     const res = await client.deleteVM(this.vmID);
     if (res instanceof Error) {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("./index.js").VmsListPage,
-        {
+        require("./index.js").VmsListPage, {
           screen: this.screen,
           layout: this.layout
         },
@@ -177,7 +197,7 @@ module.exports = class VmOptionsPage {
     });
     this.list.setItems(this.options);
 
-    this.list.on("select", function(data) {
+    this.list.on("select", function (data) {
       const index = self.list.selected;
       self.optionsNavigation(index);
     });

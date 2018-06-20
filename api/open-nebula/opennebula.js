@@ -37,17 +37,17 @@ exports.getInfoVM = function getInfoVM(id) {
       } else {
         let status = "pending";
         if (parseInt(data.VM.STATE) >= 3 && parseInt(data.VM.LCM_STATE) === 3) {
-          state = "running";
+          status = "running";
         } else if (
           parseInt(data.VM.STATE) === 8 &&
           parseInt(data.VM.LCM_STATE) === 0
         ) {
-          state = "stopped";
+          status = "stopped";
         } else if (
           parseInt(data.VM.STATE) === 5 &&
           parseInt(data.VM.LCM_STATE) === 0
         ) {
-          state = "paused";
+          status = "paused";
         }
 
         let res = {
@@ -70,6 +70,19 @@ exports.startVM = function startVM(id) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
     vm.action("resume", function (err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  }).catch(err => new Error(err));
+};
+
+exports.migrateVM = function migrateVM(id, live = false) {
+  return new Promise((resolve, reject) => {
+    const vm = one.getVM(id);
+    vm.action(live ? "live-migrate" : "migrate", function (err, data) {
       if (err) {
         reject(err);
       } else {
