@@ -56,7 +56,7 @@ module.exports = class VmCreatePage {
         },
         focus: {
           fg: "white",
-          bg: "blue"
+          bg: "yellow"
         }
       }
     });
@@ -118,7 +118,7 @@ module.exports = class VmCreatePage {
         },
         focus: {
           fg: "white",
-          bg: "blue"
+          bg: "yellow"
         }
       }
     });
@@ -226,5 +226,6 @@ module.exports = class VmCreatePage {
     // this.nameLabel.destroy();
     // this.nameInput.destroy();
     this.screen.render();
+
   }
 };

@@ -22,7 +22,6 @@ exports.createVM = function createVM(name = "default", ram, vcpu, templateId = 0
       if (err) {
         reject(err);
       } else {
-        //data.deploy("default",-1,);
         resolve(data);
       }
     });

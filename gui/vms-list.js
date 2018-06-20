@@ -92,7 +92,7 @@ module.exports = class VmsListPage {
   updateList(vms) {
     if (vms) {
       vms.map((vm, index) =>
-        this.list.insertItem(index + 1, "VM: " + vm.NAME.toString())
+        this.list.insertItem(index + 1, "VM" + vm.ID.toString() + ": " + vm.NAME.toString())
       );
       this.list.select(0);
       this.screen.render();

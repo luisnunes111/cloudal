@@ -8,41 +8,34 @@ module.exports = class HomePage {
     this.screen = state.screen;
     this.layout = state.layout;
 
-    this.box = undefined;
-    this.list = undefined;
+    this.form = undefined;
     this.init();
 
     this.done = this.done.bind(this);
   }
 
   init() {
-    this.createBox();
-    this.createList();
+    this.createForm();
+
   }
 
-  onOptionSelect(index) {
+
+  createForm() {
     const self = this;
 
-    //if START option was selected
-    if (index === 0) {
-      const state = {
-        screen: this.screen,
-        layout: this.layout
-      };
-      //redirect para a lista de VMs
-      history.redirect(require("./index.js").VmsListPage, state, function() {
-        self.done();
-      });
-    } else {
-      return process.exit(0);
-    }
-  }
+    this.form = blessed.form({
+      parent: this.layout,
+      top: "center",
+      right: 10,
+      width: "90%",
+      height: "75%",
+      keys: true,
+      vi: true
+    });
 
-  createList() {
-    const self = this;
 
     blessed.png({
-      parent: this.box,
+      parent: this.form,
       width: "90%",
       height: 11,
       top: "10%",
@@ -51,50 +44,89 @@ module.exports = class HomePage {
       scale: 1
     });
 
-    this.list = blessed.list({
-      parent: this.box,
-      width: "40%",
-      height: 4,
-      bottom: 0,
+    // Start/Exit buttons
+    this.startButton = blessed.button({
+      parent: this.form,
+      name: "start",
+      content: "START",
+      top: "70%",
       left: "center",
-      keys: true,
-      mouse: true,
-      selectedBg: "cyan",
-      fg: "white",
-      bg: "grey"
-    });
-    this.list.insertItem(0, "START");
-    this.list.insertItem(1, "EXIT");
-    this.list.on("select", function(data) {
-      const index = self.list.selected;
-      self.onOptionSelect(index);
-    });
-
-    this.screen.render();
-
-    this.list.focus();
-  }
-
-  createBox() {
-    this.box = blessed.box({
-      parent: this.layout,
-      top: "center",
-      right: 10,
-      width: "80%",
-      height: "75%",
-      tags: true,
+      shrink: true,
+      padding: {
+        top: 1,
+        right: 2,
+        bottom: 1,
+        left: 2
+      },
       style: {
+        bold: true,
         fg: "white",
-        bg: "blue"
+        bg: "green",
+        focus: {
+          inverse: true
+        }
       }
     });
+    this.exitButton = blessed.button({
+      parent: this.form,
+      name: "exit",
+      content: " EXIT",
+      top: "82%",
+      left: "center",
+      shrink: true,
+      padding: {
+        top: 1,
+        right: 2,
+        bottom: 1,
+        left: 2
+      },
+      style: {
+        bold: true,
+        fg: "white",
+        bg: "red",
+        focus: {
+          inverse: true
+        }
+      }
+    });
+
+    const label = blessed.text({
+      parent: this.form,
+      top: "95%",
+      left: "center",
+      content: "Copyright © cloudal 2018 All Rights Reserved - Luís Nunes & Rafael Escudeiro",
+    });
+
+    // Event management
+    this.startButton.on("press", function () {
+      self.form.submit();
+    });
+    this.exitButton.on("press", function () {
+      self.form.reset();
+    });
+
+    this.form.on("submit", async data => {
+      history.redirect(
+        require("./index.js").VmsListPage, {
+          screen: this.screen
+        },
+        this.done,
+        false
+      );
+    });
+
+    this.form.on("reset", async () => {
+      return process.exit(0);
+    });
+
+    this.form.focus();
 
     this.screen.render();
   }
 
   done() {
-    this.box.destroy();
-    this.list.destroy();
+    this.form.destroy();
+
     this.screen.render();
   }
 };
