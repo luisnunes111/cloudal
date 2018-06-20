@@ -1,0 +1,1 @@
+{"opennebula":{"ip":"http://localhost:2633/RPC2","credentials":"oneadmin:opennebula","provider":"Open Nebula"},"openstack":{"ip":"localhost:90001","credentials":":undefined","provider":"Open Stack"}}

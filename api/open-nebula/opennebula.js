@@ -1,6 +1,10 @@
 const OpenNebula = require("opennebula");
+const options = require("./../../configurations.json");
 
-const one = new OpenNebula("oneadmin:opennebula", "http://localhost:2633/RPC2");
+const one = new OpenNebula(
+  options.opennebula.credentials,
+  options.opennebula.ip
+);
 
 exports.getAllVMs = function getAllVMs() {
   return new Promise((resolve, reject) => {
@@ -22,7 +26,10 @@ exports.createVM = function createVM(name = "default", ram, vcpu, templateId = 0
       if (err) {
         reject(err);
       } else {
+        // vm.deploy(0, -1, true, callback,function(err, data) {
         resolve(data);
+
+        // })
       }
     });
   }).catch(err => new Error(err));
