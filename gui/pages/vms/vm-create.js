@@ -179,10 +179,10 @@ module.exports = class VmCreatePage {
     });
 
     // Event management
-    this.submitButton.on("press", function () {
+    this.submitButton.on("press", function() {
       self.form.submit();
     });
-    this.cancelButton.on("press", function () {
+    this.cancelButton.on("press", function() {
       self.form.reset();
     });
 
@@ -191,12 +191,13 @@ module.exports = class VmCreatePage {
       const ram = data.ram || "";
       const vcpu = data.vcpu || "";
 
-      const res = await client.createVM(name, parseFloat(ram), parseFloat(vcpu));
+      const res = await client.createVM(name, ram, vcpu);
       if (res instanceof Error) {
         TerminalNotification.error(this.screen, res.message);
       } else {
         history.redirect(
-          require("../../index.js").VmsListPage, {
+          require("../../index.js").VmsListPage,
+          {
             screen: this.screen,
             layout: this.layout
           },
@@ -209,7 +210,8 @@ module.exports = class VmCreatePage {
 
     this.form.on("reset", async () => {
       history.redirect(
-        require("../../index.js").VmsListPage, {
+        require("../../index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },

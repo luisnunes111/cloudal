@@ -1,11 +1,11 @@
 const blessed = require("blessed");
 const client = require("../../../api/open-nebula/opennebula.js");
 const history = require("../../../lib/configs/history.js");
-const options = require("../../../configurations.json");
 const fs = require("fs");
 const path = require("path");
 
 const TerminalNotification = require("../../../lib/components/notifications.js");
+const filePath = path.join(__dirname, "../../..", "configurations.json");
 
 module.exports = class ConfigurationsPage {
   constructor(state) {
@@ -13,7 +13,6 @@ module.exports = class ConfigurationsPage {
     this.layout = state.layout;
     this.screen = state.screen;
     this.form = undefined;
-    this.selectedOption = options[Object.keys(options)[this.configID]];
 
     this.init();
 
@@ -135,12 +134,21 @@ module.exports = class ConfigurationsPage {
         }
       }
     });
-    this.ipInput.setValue("" + this.selectedOption.ip);
-    const auth = this.selectedOption.credentials.split(":");
-    if (auth.length > 0) {
-      this.usernameInput.setValue("" + auth[0]);
-      this.passwordInput.setValue("" + auth[1]);
-    }
+
+    fs.readFile(filePath, "utf8", (err, fileData) => {
+      if (fileData) {
+        var newOptions = JSON.parse(fileData);
+        const selectedOption =
+          newOptions[Object.keys(newOptions)[this.configID]];
+        this.ipInput.setValue("" + selectedOption.ip);
+        const auth = selectedOption.credentials.split(":");
+        if (auth.length > 0) {
+          this.usernameInput.setValue("" + auth[0]);
+          this.passwordInput.setValue("" + auth[1]);
+        }
+        this.screen.render();
+      }
+    });
 
     // Submit/Cancel buttons
     this.submitButton = blessed.button({
@@ -189,17 +197,14 @@ module.exports = class ConfigurationsPage {
     });
 
     // Event management
-    this.submitButton.on("press", function () {
+    this.submitButton.on("press", function() {
       self.form.submit();
     });
-    this.cancelButton.on("press", function () {
+    this.cancelButton.on("press", function() {
       self.form.reset();
     });
 
     this.form.on("submit", data => {
-      //PARA MELHORAR
-      const filePath = path.join(__dirname, "../../..", "configurations.json");
-
       fs.readFile(filePath, "utf8", (err, fileData) => {
         if (err) {
           TerminalNotification.error(
@@ -211,13 +216,15 @@ module.exports = class ConfigurationsPage {
           newOptions[Object.keys(newOptions)[this.configID]] = {
             ip: data.ip || "",
             credentials: (data.username || "") + ":" + (data.password || ""),
-            provider: this.selectedOption.provider
+            provider:
+              newOptions[Object.keys(newOptions)[this.configID]].provider
           };
 
           const json = JSON.stringify(newOptions); //convert it back to json
           fs.writeFile(filePath, json, "utf8", () => {
             history.redirect(
-              require("../../index.js").Home, {
+              require("../../index").Home,
+              {
                 screen: this.screen,
                 layout: this.layout
               },
@@ -232,7 +239,8 @@ module.exports = class ConfigurationsPage {
 
     this.form.on("reset", async () => {
       history.redirect(
-        require("./../index.js").Home, {
+        require("../../index.js").Home,
+        {
           screen: this.screen,
           layout: this.layout
         },

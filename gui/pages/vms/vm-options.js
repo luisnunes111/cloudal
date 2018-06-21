@@ -176,6 +176,7 @@ module.exports = class VmOptionsPage {
         this.done,
         false
       );
+      TerminalNotification.success(this.screen, "VM deleted successfully");
     }
   }
 

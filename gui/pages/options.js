@@ -29,7 +29,8 @@ module.exports = class OptionsPage {
     switch (index) {
       case 0:
         history.redirect(
-          require("./../index.js").VmsListPage, {
+          require("./../index.js").VmsListPage,
+          {
             screen: this.screen,
             layout: this.layout
           },
@@ -38,7 +39,8 @@ module.exports = class OptionsPage {
         break;
       case 1:
         history.redirect(
-          require("./../index.js").HostsListPage, {
+          require("./../index.js").HostsListPage,
+          {
             screen: this.screen,
             layout: this.layout
           },
@@ -47,7 +49,8 @@ module.exports = class OptionsPage {
         break;
       case 2:
         history.redirect(
-          require("./../index.js").ConfigurationsListPage, {
+          require("./../index.js").ConfigurationsListPage,
+          {
             screen: this.screen,
             layout: this.layout
           },
@@ -55,7 +58,7 @@ module.exports = class OptionsPage {
         );
         break;
 
-        case 3:
+      case 3:
         new VmMigratePrompt(
           this.screen,
           "Are you sure that you want to MIGRATE all the VMs to one host?",
@@ -66,50 +69,48 @@ module.exports = class OptionsPage {
     }
   }
 
-  
   async evictVMs(isLive, hostId) {
     //check host????
 
     const userVms = await client.getAllVMs();
-    const results = await Promise.all(userVms.map(item => {
-      return client.migrateVM(
-        parseInt(item.ID),
-        parseInt(hostId),
-        isLive
-      )
-    }));
+    const results = await Promise.all(
+      userVms.map(item => {
+        return client.migrateVM(parseInt(item.ID), parseInt(hostId), isLive);
+      })
+    );
 
     //check results
-    let vmStateCount= 0;
-    let error ="";
+    let vmStateCount = 0;
+    let error = "";
     results.map(result => {
-      if(result instanceof Error){
-        vmStateCount = vmStateCount+1;
+      if (result instanceof Error) {
+        vmStateCount = vmStateCount + 1;
         error = result.message;
       }
-    })
+    });
 
-    if(vmStateCount === 0 && userVms.length > 0){
+    if (vmStateCount === 0 && userVms.length > 0) {
       history.redirect(
-        require("../index.js").HostDashboardPage,
+        require("../index.js").HostsListPage,
         {
           screen: this.screen,
-          layout: this.layout,
-          id: hostId
+          layout: this.layout
         },
         this.done
       );
-      TerminalNotification.success(this.screen, "All VMs migrated to host "+hostId+" successfully");
-    }
-    else if(vmStateCount > 0 && vmStateCount !== userVms.length){
-      TerminalNotification.warning(this.screen, "Not all VMs were migrated to the host "+hostId+"");
-    }
-    else{
+      TerminalNotification.success(
+        this.screen,
+        "All VMs migrated to host " + hostId + " successfully"
+      );
+    } else if (vmStateCount > 0 && vmStateCount !== userVms.length) {
+      TerminalNotification.warning(
+        this.screen,
+        "Not all VMs were migrated to the host " + hostId + ""
+      );
+    } else {
       TerminalNotification.error(this.screen, error);
     }
-
   }
-  
 
   createList() {
     const self = this;
@@ -128,7 +129,7 @@ module.exports = class OptionsPage {
     });
     this.list.setItems(this.options);
 
-    this.list.on("select", function (data) {
+    this.list.on("select", function(data) {
       const index = self.list.selected;
       self.onOptionsSelect(index);
     });
