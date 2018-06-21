@@ -16,9 +16,7 @@ module.exports = class HomePage {
 
   init() {
     this.createForm();
-
   }
-
 
   createForm() {
     const self = this;
@@ -32,7 +30,6 @@ module.exports = class HomePage {
       keys: true,
       vi: true
     });
-
 
     blessed.png({
       parent: this.form,
@@ -94,24 +91,26 @@ module.exports = class HomePage {
       parent: this.form,
       top: "95%",
       left: "center",
-      content: "Copyright © cloudal 2018 All Rights Reserved - Luís Nunes & Rafael Escudeiro",
+      content:
+        "Copyright © cloudal 2018 All Rights Reserved - Luís Nunes & Rafael Escudeiro"
     });
 
     // Event management
-    this.startButton.on("press", function () {
+    this.startButton.on("press", function() {
       self.form.submit();
     });
-    this.exitButton.on("press", function () {
+    this.exitButton.on("press", function() {
       self.form.reset();
     });
 
     this.form.on("submit", async data => {
       history.redirect(
-        require("./index.js").VmsListPage, {
-          screen: this.screen
+        require("./index.js").OptionsPage,
+        {
+          screen: this.screen,
+          layout: this.layout
         },
-        this.done,
-        false
+        this.done
       );
     });
 

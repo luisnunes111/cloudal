@@ -12,7 +12,7 @@ screen.key(["escape", "C-c"], (ch, key) => {
 
 const layout = new Layout(screen);
 
-history.initialize(require("./gui/index").OptionsPage, {
+history.initialize(require("./gui/index").Home, {
   screen: screen,
   layout: layout.mainBox
 });

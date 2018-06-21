@@ -8,7 +8,7 @@ const one = new OpenNebula(
 
 exports.getAllVMs = function getAllVMs() {
   return new Promise((resolve, reject) => {
-    one.getVMs(function (err, data) {
+    one.getVMs(function(err, data) {
       if (err) {
         reject(err);
       } else {
@@ -18,27 +18,38 @@ exports.getAllVMs = function getAllVMs() {
   }).catch(err => new Error(err));
 };
 
-exports.createVM = function createVM(name = "default", ram, vcpu, templateId = 0) {
+exports.createVM = function createVM(
+  name = "default",
+  ram,
+  vcpu,
+  templateId = 0
+) {
   return new Promise((resolve, reject) => {
     const template = one.getTemplate(templateId);
-    const context = 'CONTEXT=[NETWORK="YES", SSH_PUBLIC_KEY="root[SSH_PUBLIC_KEY]"]\n';
-    template.instantiate(name, undefined, 'MEMORY="' + (ram || 1024) + '"\nVCPU="' + (vcpu || 1) + '"\n ' + context, function (err, data) {
-      if (err) {
-        reject(err);
-      } else {
-        // vm.deploy(0, -1, true, callback,function(err, data) {
-        resolve(data);
+    const context =
+      'CONTEXT=[NETWORK="YES", SSH_PUBLIC_KEY="root[SSH_PUBLIC_KEY]"]\n';
+    template.instantiate(
+      name,
+      undefined,
+      'MEMORY="' + (ram || 1024) + '"\nVCPU="' + (vcpu || 1) + '"\n ' + context,
+      function(err, data) {
+        if (err) {
+          reject(err);
+        } else {
+          // vm.deploy(0, -1, true, callback,function(err, data) {
+          resolve(data);
 
-        // })
+          // })
+        }
       }
-    });
+    );
   }).catch(err => new Error(err));
 };
 
 exports.getInfoVM = function getInfoVM(id) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.info(function (err, data) {
+    vm.info(function(err, data) {
       if (err) {
         reject(err);
       } else {
@@ -76,7 +87,7 @@ exports.getInfoVM = function getInfoVM(id) {
 exports.startVM = function startVM(id) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.action("resume", function (err, data) {
+    vm.action("resume", function(err, data) {
       if (err) {
         reject(err);
       } else {
@@ -89,7 +100,7 @@ exports.startVM = function startVM(id) {
 exports.migrateVM = function migrateVM(id, live = false) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.action(live ? "live-migrate" : "migrate", function (err, data) {
+    vm.action(live ? "live-migrate" : "migrate", function(err, data) {
       if (err) {
         reject(err);
       } else {
@@ -102,7 +113,7 @@ exports.migrateVM = function migrateVM(id, live = false) {
 exports.shutdownVM = function shutdownVM(id, force = false) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.action(force ? "poweroff-hard" : "poweroff", function (err, data) {
+    vm.action(force ? "poweroff-hard" : "poweroff", function(err, data) {
       if (err) {
         reject(err);
       } else {
@@ -115,7 +126,7 @@ exports.shutdownVM = function shutdownVM(id, force = false) {
 exports.rebootVM = function rebootVM(id, force = false) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.action(force ? "reboot-hard" : "reboot", function (err, data) {
+    vm.action(force ? "reboot-hard" : "reboot", function(err, data) {
       if (err) {
         reject(err);
       } else {
@@ -128,7 +139,7 @@ exports.rebootVM = function rebootVM(id, force = false) {
 exports.deleteVM = function deleteVM(id) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(parseInt(id));
-    vm.action("delete", function (err, data) {
+    vm.action("delete", function(err, data) {
       if (err) {
         reject(err);
       } else {
@@ -142,7 +153,7 @@ exports.monitoringVM = function monitoringVM(id) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(parseInt(id));
 
-    vm.monitoring(function (err, data) {
+    vm.monitoring(function(err, data) {
       if (err) {
         //'Error fetching VM statistics'
         reject(err);
@@ -163,6 +174,109 @@ exports.monitoringVM = function monitoringVM(id) {
         }
         stats = stats.slice(Math.max(stats.length - 40, 0)); //last 40
         return resolve(stats);
+      }
+    });
+  }).catch(err => new Error(err));
+};
+
+// -----------------HOSTS------------------
+
+exports.createHost = function createHost(name) {
+  return new Promise((resolve, reject) => {
+    const vm = one.createHost(name, "kvm", "qemu", -1, -1, function(err, data) {
+      if (err) {
+        return reject(err);
+      } else {
+        return resolve(data);
+      }
+    });
+  }).catch(err => new Error(err));
+};
+
+exports.getAllHosts = function getAllHosts() {
+  return new Promise((resolve, reject) => {
+    const vm = one.getHosts(function(err, data) {
+      if (err) {
+        return reject(err);
+      } else {
+        return resolve(data);
+      }
+    });
+  }).catch(err => new Error(err));
+};
+
+// CLUSTER:"default"
+// CLUSTER_ID:"0"
+// ID:"0"
+// IM_MAD:"kvm"
+// LAST_MON_TIME:"1529366045"
+// NAME:"one-sandbox"
+// STATE:"2"
+// VM_MAD:"qemu"
+// VMS.ID
+
+//HOST_SHARE
+
+// RUNNING_VMS:"4"
+
+// DISK_USAGE:"0"
+// FREE_CPU:"100"
+// FREE_DISK:"7022"
+// FREE_MEM:"387676"
+// MAX_CPU:"100"
+// MAX_DISK:"9207"
+// MAX_MEM:"1016460"
+// MEM_USAGE:"524288"
+// TOTAL_CPU:"100"
+// TOTAL_MEM:"1016460"
+// USED_CPU:"0"
+// USED_DISK:"1695"
+// USED_MEM:"628784"
+
+exports.monitoringHost = function monitoringHost(id) {
+  return new Promise((resolve, reject) => {
+    const host = one.getHost(id);
+
+    host.monitoring(function(err, data) {
+      if (err) {
+        return reject(err);
+      } else {
+        if (data.MONITORING_DATA.HOST) {
+          const last =
+            data.MONITORING_DATA.HOST[data.MONITORING_DATA.HOST.length - 1];
+          const response = {
+            clusterName: last.CLUSTER,
+            clusterId: last.CLUSTER_ID,
+            id: last.ID,
+            im_mad: last.IM_MAD,
+            vm_mad: last.VM_MAD,
+            time: last.LAST_MON_TIME,
+            name: last.NAME,
+            status: last.STATE,
+            vms: last.VMS.ID.join(", "),
+            runningVms: last.HOST_SHARE.RUNNING_VMS,
+            stats: {
+              cpu_usage: last.HOST_SHARE.CPU_USAGE,
+              disk_usage: last.HOST_SHARE.DISK_USAGE,
+              mem_usage: last.HOST_SHARE.MEM_USAGE,
+              free_cpu: last.HOST_SHARE.FREE_CPU,
+              free_disk: last.HOST_SHARE.FREE_DISK,
+              free_mem: last.HOST_SHARE.FREE_MEM,
+              max_cpu: last.HOST_SHARE.MAX_CPU,
+              max_disk: last.HOST_SHARE.MAX_DISK,
+              max_mem: last.HOST_SHARE.MAX_MEM,
+              total_cpu: last.HOST_SHARE.TOTAL_CPU,
+              total_mem: last.HOST_SHARE.TOTAL_MEM,
+              used_cpu: last.HOST_SHARE.USED_CPU,
+              used_disk: last.HOST_SHARE.USED_DISK,
+              used_mem: last.HOST_SHARE.USED_MEM
+            }
+          };
+
+          return resolve(response);
+        } else {
+          resolve();
+        }
       }
     });
   }).catch(err => new Error(err));

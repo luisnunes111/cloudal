@@ -2,9 +2,6 @@ const blessed = require("blessed");
 const contrib = require("blessed-contrib");
 const client = require("../api/open-nebula/opennebula");
 const history = require("../lib/configs/history.js");
-const chalk = require("chalk");
-
-const globalState = require("./../main.js");
 
 module.exports = class VmDashboardPage {
   constructor(state) {

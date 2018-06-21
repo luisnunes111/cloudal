@@ -1,10 +1,10 @@
 const blessed = require("blessed");
-const client = require("../api/open-nebula/opennebula.js");
-const history = require("../lib/configs/history.js");
+const client = require("../../../api/open-nebula/opennebula.js");
+const history = require("../../../lib/configs/history.js");
 
-const TerminalNotification = require("../lib/components/notifications.js");
+const TerminalNotification = require("../../../lib/components/notifications.js");
 
-module.exports = class VmCreatePage {
+module.exports = class HostCreatePage {
   constructor(state) {
     this.screen = state.screen;
     this.layout = state.layout;
@@ -43,72 +43,6 @@ module.exports = class VmCreatePage {
       parent: this.form,
       name: "name",
       top: 4,
-      left: 5,
-      right: 5,
-      height: 2,
-      inputOnFocus: true,
-      padding: {
-        right: 2,
-        left: 2
-      },
-      style: {
-        bg: "#ccc",
-        fg: "#000",
-        border: {
-          type: "line"
-        },
-        focus: {
-          fg: "white",
-          bg: "blue"
-        }
-      }
-    });
-
-    this.ramLabel = blessed.text({
-      parent: this.form,
-      top: 6,
-      left: 5,
-      right: 5,
-      content: "RAM:"
-    });
-
-    this.ramInput = blessed.textbox({
-      parent: this.form,
-      name: "ram",
-      top: 8,
-      left: 5,
-      right: 5,
-      height: 2,
-      inputOnFocus: true,
-      padding: {
-        right: 2,
-        left: 2
-      },
-      style: {
-        bg: "#ccc",
-        fg: "#000",
-        border: {
-          type: "line"
-        },
-        focus: {
-          fg: "white",
-          bg: "blue"
-        }
-      }
-    });
-
-    this.vcpuLabel = blessed.text({
-      parent: this.form,
-      top: 10,
-      left: 5,
-      right: 5,
-      content: "VCPU:"
-    });
-
-    this.vcpuInput = blessed.textbox({
-      parent: this.form,
-      name: "vcpu",
-      top: 12,
       left: 5,
       right: 5,
       height: 2,
@@ -186,15 +120,13 @@ module.exports = class VmCreatePage {
 
     this.form.on("submit", async data => {
       const name = data.name || "";
-      const ram = data.ram || "";
-      const vcpu = data.vcpu || "";
 
-      const res = await client.createVM(name, ram, vcpu);
+      const res = await client.createHost(name);
       if (res instanceof Error) {
         TerminalNotification.error(this.screen, res.message);
       } else {
         history.redirect(
-          require("./index.js").VmsListPage,
+          require("./../../index.js").HostsListPage,
           {
             screen: this.screen,
             layout: this.layout
@@ -202,13 +134,13 @@ module.exports = class VmCreatePage {
           this.done,
           false
         );
-        TerminalNotification.success(this.screen, "VM created successfully");
+        TerminalNotification.success(this.screen, "Host created successfully");
       }
     });
 
     this.form.on("reset", async () => {
       history.redirect(
-        require("./index.js").VmsListPage,
+        require("./../../index.js").HostsListPage,
         {
           screen: this.screen,
           layout: this.layout
@@ -232,10 +164,6 @@ module.exports = class VmCreatePage {
 
   done() {
     this.form.destroy();
-    // this.cancelButton.destroy();
-    // this.submitButton.destroy();
-    // this.nameLabel.destroy();
-    // this.nameInput.destroy();
     this.screen.render();
   }
 };
