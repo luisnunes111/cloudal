@@ -1,6 +1,8 @@
 const blessed = require("blessed");
 const client = require("../api/open-nebula/opennebula.js");
 const history = require("../lib/configs/history.js");
+const chalk = require("chalk");
+
 
 const TerminalNotification = require("../lib/components/notifications.js");
 
@@ -27,6 +29,7 @@ module.exports = class VmCreatePage {
       right: 10,
       width: "80%",
       height: "70%",
+      content: chalk.white.bgCyanBright.bold("Virtual Machine Create Page"),
       keys: true,
       vi: true
     });
@@ -177,10 +180,10 @@ module.exports = class VmCreatePage {
     });
 
     // Event management
-    this.submitButton.on("press", function() {
+    this.submitButton.on("press", function () {
       self.form.submit();
     });
-    this.cancelButton.on("press", function() {
+    this.cancelButton.on("press", function () {
       self.form.reset();
     });
 
@@ -194,8 +197,7 @@ module.exports = class VmCreatePage {
         TerminalNotification.error(this.screen, res.message);
       } else {
         history.redirect(
-          require("./index.js").VmsListPage,
-          {
+          require("./index.js").VmsListPage, {
             screen: this.screen,
             layout: this.layout
           },
@@ -208,8 +210,7 @@ module.exports = class VmCreatePage {
 
     this.form.on("reset", async () => {
       history.redirect(
-        require("./index.js").VmsListPage,
-        {
+        require("./index.js").VmsListPage, {
           screen: this.screen,
           layout: this.layout
         },

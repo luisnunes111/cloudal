@@ -39,7 +39,7 @@ module.exports = class VmsListPage {
         screen: this.screen,
         layout: this.layout
       }; //redirect para o create
-      history.redirect(require("./index.js").VmCreatePage, state, function() {
+      history.redirect(require("./index.js").VmCreatePage, state, function () {
         self.done();
       });
     } else {
@@ -48,7 +48,7 @@ module.exports = class VmsListPage {
         layout: this.layout,
         id: this.VMs[index - 1].ID
       }; //redirect para as options
-      history.redirect(require("./index.js").VmOptionsPage, state, function() {
+      history.redirect(require("./index.js").VmOptionsPage, state, function () {
         self.done();
       });
     }
@@ -71,7 +71,7 @@ module.exports = class VmsListPage {
     });
     this.list.insertItem(0, "------------NEW VIRTUAL MACHINE------------");
 
-    this.list.on("select", function(data) {
+    this.list.on("select", function (data) {
       const index = self.list.selected;
       self.onVmSelect(index);
     });

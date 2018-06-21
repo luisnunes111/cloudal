@@ -1,6 +1,8 @@
 const blessed = require("blessed");
 const client = require("../../api/open-nebula/opennebula");
 const history = require("../../lib/configs/history.js");
+const chalk = require("chalk");
+
 
 module.exports = class OptionsPage {
   constructor(state) {
@@ -8,7 +10,7 @@ module.exports = class OptionsPage {
     this.layout = state.layout;
     this.box = undefined;
     this.list = undefined;
-    this.options = ["My VM's", "My Hosts", "Configurations"];
+    this.options = ["My VMs", "My Hosts", "Configurations"];
 
     this.init();
 
@@ -26,8 +28,7 @@ module.exports = class OptionsPage {
     switch (index) {
       case 0:
         history.redirect(
-          require("./../index.js").VmsListPage,
-          {
+          require("./../index.js").VmsListPage, {
             screen: this.screen,
             layout: this.layout
           },
@@ -36,8 +37,7 @@ module.exports = class OptionsPage {
         break;
       case 1:
         history.redirect(
-          require("./../index.js").HostsListPage,
-          {
+          require("./../index.js").HostsListPage, {
             screen: this.screen,
             layout: this.layout
           },
@@ -46,8 +46,7 @@ module.exports = class OptionsPage {
         break;
       case 2:
         history.redirect(
-          require("./../index.js").ConfigurationsListPage,
-          {
+          require("./../index.js").ConfigurationsListPage, {
             screen: this.screen,
             layout: this.layout
           },
@@ -74,7 +73,7 @@ module.exports = class OptionsPage {
     });
     this.list.setItems(this.options);
 
-    this.list.on("select", function(data) {
+    this.list.on("select", function (data) {
       const index = self.list.selected;
       self.onOptionsSelect(index);
     });
@@ -100,6 +99,7 @@ module.exports = class OptionsPage {
       width: "80%",
       height: "75%",
       tags: true,
+      content: chalk.white.bgCyanBright.bold("Options Page"),
       style: {
         fg: "white",
         bg: "blue"

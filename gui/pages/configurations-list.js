@@ -1,6 +1,8 @@
 const blessed = require("blessed");
 const history = require("../../lib/configs/history.js");
 const options = require("./../../configurations.json");
+const chalk = require("chalk");
+
 
 module.exports = class ConfigurationsListPage {
   constructor(state) {
@@ -31,8 +33,7 @@ module.exports = class ConfigurationsListPage {
 
   onProviderSelect(index) {
     history.redirect(
-      require("./../index.js").ConfigurationsPage,
-      {
+      require("./../index.js").ConfigurationsPage, {
         screen: this.screen,
         layout: this.layout,
         id: index
@@ -57,7 +58,7 @@ module.exports = class ConfigurationsListPage {
       bg: "grey"
     });
 
-    this.list.on("select", function(data) {
+    this.list.on("select", function (data) {
       const index = self.list.selected;
       self.onProviderSelect(index);
     });
@@ -83,6 +84,8 @@ module.exports = class ConfigurationsListPage {
       width: "80%",
       height: "75%",
       tags: true,
+      content: chalk.white.bgCyanBright.bold("Configuration List Page"),
+
       style: {
         fg: "white",
         bg: "blue"

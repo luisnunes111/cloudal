@@ -80,7 +80,7 @@ module.exports = class HostsListPage {
     });
     this.list.insertItem(0, "------------NEW HOST------------");
 
-    this.list.on("select", function(data) {
+    this.list.on("select", function (data) {
       const index = self.list.selected;
       self.onHostSelect(index);
     });
@@ -106,6 +106,7 @@ module.exports = class HostsListPage {
       width: "80%",
       height: "75%",
       tags: true,
+      content: chalk.white.bgCyanBright.bold("Host List Page"),
       style: {
         fg: "white",
         bg: "blue"

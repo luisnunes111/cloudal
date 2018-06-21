@@ -1,6 +1,8 @@
 const blessed = require("blessed");
 const client = require("../../../api/open-nebula/opennebula.js");
 const history = require("../../../lib/configs/history.js");
+const chalk = require("chalk");
+
 
 const TerminalNotification = require("../../../lib/components/notifications.js");
 
@@ -27,6 +29,7 @@ module.exports = class HostCreatePage {
       right: 10,
       width: "80%",
       height: "70%",
+      content: chalk.white.bgCyanBright.bold("Host Create Page"),
       keys: true,
       vi: true
     });
@@ -111,10 +114,10 @@ module.exports = class HostCreatePage {
     });
 
     // Event management
-    this.submitButton.on("press", function() {
+    this.submitButton.on("press", function () {
       self.form.submit();
     });
-    this.cancelButton.on("press", function() {
+    this.cancelButton.on("press", function () {
       self.form.reset();
     });
 
@@ -126,8 +129,7 @@ module.exports = class HostCreatePage {
         TerminalNotification.error(this.screen, res.message);
       } else {
         history.redirect(
-          require("./../../index.js").HostsListPage,
-          {
+          require("./../../index.js").HostsListPage, {
             screen: this.screen,
             layout: this.layout
           },
@@ -140,8 +142,7 @@ module.exports = class HostCreatePage {
 
     this.form.on("reset", async () => {
       history.redirect(
-        require("./../../index.js").HostsListPage,
-        {
+        require("./../../index.js").HostsListPage, {
           screen: this.screen,
           layout: this.layout
         },
