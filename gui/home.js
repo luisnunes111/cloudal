@@ -102,7 +102,6 @@ module.exports = class HomePage {
     this.exitButton.on("press", function() {
       self.form.reset();
     });
-
     this.form.on("submit", async data => {
       history.redirect(
         require("./index.js").OptionsPage,
@@ -118,7 +117,7 @@ module.exports = class HomePage {
       return process.exit(0);
     });
 
-    this.form.focus();
+    this.startButton.focus();
 
     this.screen.render();
   }

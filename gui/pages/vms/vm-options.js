@@ -6,6 +6,7 @@ const chalk = require("chalk");
 const ConfirmPrompt = require("../../../lib/components/prompts/confirm-prompt.js");
 const VmOptionsPrompt = require("../../../lib/components/prompts/vm-options-prompt.js");
 const TerminalNotification = require("../../../lib/components/notifications.js");
+const VmMigratePrompt = require("../../../lib/components/prompts/vm-migrate-prompt.js");
 
 module.exports = class VmOptionsPage {
   constructor(state) {
@@ -13,7 +14,6 @@ module.exports = class VmOptionsPage {
     this.screen = state.screen;
     this.layout = state.layout;
     this.options = [
-      "View info",
       "Dashboard",
       "Start",
       "Reboot",
@@ -37,7 +37,8 @@ module.exports = class VmOptionsPage {
     switch (index) {
       case 0:
         history.redirect(
-          require("../../index.js").VmInfoPage, {
+          require("../../index.js").VmDashboardPage,
+          {
             screen: this.screen,
             layout: this.layout,
             id: this.vmID
@@ -46,23 +47,13 @@ module.exports = class VmOptionsPage {
         );
         break;
       case 1:
-        history.redirect(
-          require("../../index.js").VmDashboardPage, {
-            screen: this.screen,
-            layout: this.layout,
-            id: this.vmID
-          },
-          this.done
-        );
-        break;
-      case 2:
         new ConfirmPrompt(
           this.screen,
           "Are you sure that you want to START the VM?",
           this.startVM.bind(this)
         );
         break;
-      case 3:
+      case 2:
         new VmOptionsPrompt(
           this.screen,
           "Are you sure that you want to REBOOT the VM?",
@@ -70,22 +61,22 @@ module.exports = class VmOptionsPage {
           this.rebootVM.bind(this)
         );
         break;
-      case 4:
+      case 3:
         new VmOptionsPrompt(
           this.screen,
           "Are you sure that you want to SHUTDOWN the VM?",
           this.shutdownVM.bind(this)
         );
         break;
-      case 5:
-        new VmOptionsPrompt(
+      case 4:
+        new VmMigratePrompt(
           this.screen,
           "Are you sure that you want to MIGRATE the VM?",
           this.migrateVM.bind(this),
           this.migrateVM.bind(this)
         );
         break;
-      case 6:
+      case 5:
         new ConfirmPrompt(
           this.screen,
           "Are you sure that you want to DELETE the VM?",
@@ -101,7 +92,8 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("../../index.js").VmsListPage, {
+        require("../../index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },
@@ -118,7 +110,8 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("../../index.js").VmsListPage, {
+        require("../../index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },
@@ -135,7 +128,8 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("../../index.js").VmsListPage, {
+        require("../../index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },
@@ -146,18 +140,22 @@ module.exports = class VmOptionsPage {
     }
   }
 
-  async migrateVM() {
-    const res = await client.migrateVM(this.vmID, 1, false, false, 1);
+  async migrateVM(isLive, hostId) {
+    const res = await client.migrateVM(
+      parseInt(this.vmID),
+      parseInt(hostId),
+      isLive
+    );
     if (res instanceof Error) {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("../../index.js").VmsListPage, {
+        require("../../index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },
-        this.done,
-        false
+        this.done
       );
       TerminalNotification.success(this.screen, "VM migrated successfully");
     }
@@ -169,7 +167,8 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("../../index.js").VmsListPage, {
+        require("../../index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },
@@ -196,7 +195,7 @@ module.exports = class VmOptionsPage {
     });
     this.list.setItems(this.options);
 
-    this.list.on("select", function (data) {
+    this.list.on("select", function(data) {
       const index = self.list.selected;
       self.optionsNavigation(index);
     });

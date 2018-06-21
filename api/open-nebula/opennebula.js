@@ -97,11 +97,10 @@ exports.startVM = function startVM(id) {
   }).catch(err => new Error(err));
 };
 
-exports.migrateVM = function migrateVM(id, hostID, live, enforce, datastore) {
+exports.migrateVM = function migrateVM(id, hostID, live) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-
-    vm.migrate(undefined, id, hostID, live, enforce, datastore, function (err, data) {
+    vm.migrate(hostID, live, false, 0, function(err, data) {
       if (err) {
         reject(err);
       } else {
@@ -205,34 +204,6 @@ exports.getAllHosts = function getAllHosts() {
     });
   }).catch(err => new Error(err));
 };
-
-// CLUSTER:"default"
-// CLUSTER_ID:"0"
-// ID:"0"
-// IM_MAD:"kvm"
-// LAST_MON_TIME:"1529366045"
-// NAME:"one-sandbox"
-// STATE:"2"
-// VM_MAD:"qemu"
-// VMS.ID
-
-//HOST_SHARE
-
-// RUNNING_VMS:"4"
-
-// DISK_USAGE:"0"
-// FREE_CPU:"100"
-// FREE_DISK:"7022"
-// FREE_MEM:"387676"
-// MAX_CPU:"100"
-// MAX_DISK:"9207"
-// MAX_MEM:"1016460"
-// MEM_USAGE:"524288"
-// TOTAL_CPU:"100"
-// TOTAL_MEM:"1016460"
-// USED_CPU:"0"
-// USED_DISK:"1695"
-// USED_MEM:"628784"
 
 exports.monitoringHost = function monitoringHost(id) {
   return new Promise((resolve, reject) => {

@@ -27,7 +27,10 @@ module.exports = class HostsListPage {
 
     if (this.hosts) {
       this.hosts.map((host, index) =>
-        this.list.insertItem(index + 1, host.NAME.toString())
+        this.list.insertItem(
+          index + 1,
+          host.NAME.toString() + " (ID: " + host.ID + ")"
+        )
       );
       this.list.select(0);
       this.screen.render();

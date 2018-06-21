@@ -133,7 +133,7 @@ module.exports = class VmDashboardPage {
       parent: this.box,
       top: "70%",
       left: 0,
-      width: "98%",
+      width: "100%",
       height: "30%",
       border: {
         type: "line"
@@ -148,22 +148,22 @@ module.exports = class VmDashboardPage {
     });
 
     // state, memory, cpu, disk?
-    this.label(0, 6, "CPU");
-    this.info.cpuInfo = this.label(1, 6, "");
-    this.label(0, 18, "MEMORY");
-    this.info.memoryInfo = this.label(1, 18, "");
-    this.label(0, 35, "DISK SPACE");
-    this.info.diskInfo = this.label(1, 37, "");
-    this.info.statusInfo = this.vmStatusBox(0, 55, "none");
+    this.label(0, "10%", "CPU");
+    this.info.cpuInfo = this.label(1, "10%", "");
+    this.label(0, "30%", "MEMORY");
+    this.info.memoryInfo = this.label(1, "30%", "");
+    this.label(0, "55%", "DISK SPACE");
+    this.info.diskInfo = this.label(1, "55%", "");
+    this.info.statusInfo = this.vmStatusBox(0, "80%", "none");
 
-    this.label(3, 6, "Name");
-    this.info.nameInfo = this.label(4, 6, "");
-    this.label(3, 18, "Template ID");
-    this.info.templateIdInfo = this.label(4, 18, "");
-    this.label(3, 40, "VM ID");
-    this.info.vmIdInfo = this.label(4, 40, "");
-    this.label(3, 55, "Last update");
-    this.info.lastUpdateInfo = this.label(4, 55, "");
+    this.label(3, "10%", "Name");
+    this.info.nameInfo = this.label(4, "10%", "");
+    this.label(3, "30%", "Template ID");
+    this.info.templateIdInfo = this.label(4, "30%", "");
+    this.label(3, "55%", "VM ID");
+    this.info.vmIdInfo = this.label(4, "55%", "");
+    this.label(3, "80%", "Last update");
+    this.info.lastUpdateInfo = this.label(4, "80%", "");
 
     this.screen.render();
   }
@@ -236,7 +236,7 @@ module.exports = class VmDashboardPage {
       top: 0,
       right: 0,
       height: "35%",
-      width: "20%",
+      width: "21%",
       radius: 8,
       arcWidth: 3,
       remainColor: "black",
@@ -251,8 +251,8 @@ module.exports = class VmDashboardPage {
     this.memoryDonut = contrib.donut({
       top: "35%",
       right: 0,
-      height: "35%",
-      width: "20%",
+      height: "37%",
+      width: "21%",
       radius: 8,
       arcWidth: 3,
       remainColor: "black",
@@ -271,7 +271,7 @@ module.exports = class VmDashboardPage {
 
   createNetworkGraph() {
     this.networkGraph = contrib.line({
-      width: "79%",
+      width: "80%",
       height: "70%",
       top: 0,
       left: 0,
