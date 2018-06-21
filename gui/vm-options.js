@@ -79,7 +79,7 @@ module.exports = class VmOptionsPage {
         );
         break;
       case 5:
-        new ConfirmPrompt(
+        new VmOptionsPrompt(
           this.screen,
           "Are you sure that you want to MIGRATE the VM?",
           this.migrateVM.bind(this),
@@ -147,8 +147,8 @@ module.exports = class VmOptionsPage {
     }
   }
 
-  async migrateVM(live) {
-    const res = await client.migrateVM(this.vmID, live);
+  async migrateVM() {
+    const res = await client.migrateVM(this.vmID, 1, false, false, 1);
     if (res instanceof Error) {
       TerminalNotification.error(this.screen, res.message);
     } else {

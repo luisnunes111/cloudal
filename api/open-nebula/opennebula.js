@@ -86,10 +86,11 @@ exports.startVM = function startVM(id) {
   }).catch(err => new Error(err));
 };
 
-exports.migrateVM = function migrateVM(id, live = false) {
+exports.migrateVM = function migrateVM(id, hostID, live, enforce, datastore) {
   return new Promise((resolve, reject) => {
     const vm = one.getVM(id);
-    vm.action(live ? "live-migrate" : "migrate", function (err, data) {
+
+    vm.migrate(undefined, id, hostID, live, enforce, datastore, function (err, data) {
       if (err) {
         reject(err);
       } else {
