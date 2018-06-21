@@ -191,7 +191,7 @@ module.exports = class VmCreatePage {
       const ram = data.ram || "";
       const vcpu = data.vcpu || "";
 
-      const res = await client.createVM(name, ram, vcpu);
+      const res = await client.createVM(name, parseFloat(ram), parseFloat(vcpu));
       if (res instanceof Error) {
         TerminalNotification.error(this.screen, res.message);
       } else {

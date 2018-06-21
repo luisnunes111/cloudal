@@ -2,7 +2,8 @@ const blessed = require("blessed");
 const client = require("../../api/open-nebula/opennebula");
 const history = require("../../lib/configs/history.js");
 const chalk = require("chalk");
-
+const VmMigratePrompt = require("../../lib/components/prompts/vm-migrate-prompt.js");
+const TerminalNotification = require("../../lib/components/notifications.js");
 
 module.exports = class OptionsPage {
   constructor(state) {
@@ -10,7 +11,7 @@ module.exports = class OptionsPage {
     this.layout = state.layout;
     this.box = undefined;
     this.list = undefined;
-    this.options = ["My VMs", "My Hosts", "Configurations"];
+    this.options = ["My VMs", "My Hosts", "Configurations", "Evict all VMs"];
 
     this.init();
 
@@ -53,8 +54,62 @@ module.exports = class OptionsPage {
           this.done
         );
         break;
+
+        case 3:
+        new VmMigratePrompt(
+          this.screen,
+          "Are you sure that you want to MIGRATE all the VMs to one host?",
+          this.evictVMs.bind(this),
+          this.evictVMs.bind(this)
+        );
+        break;
     }
   }
+
+  
+  async evictVMs(isLive, hostId) {
+    //check host????
+
+    const userVms = await client.getAllVMs();
+    const results = await Promise.all(userVms.map(item => {
+      return client.migrateVM(
+        parseInt(item.ID),
+        parseInt(hostId),
+        isLive
+      )
+    }));
+
+    //check results
+    let vmStateCount= 0;
+    let error ="";
+    results.map(result => {
+      if(result instanceof Error){
+        vmStateCount = vmStateCount+1;
+        error = result.message;
+      }
+    })
+
+    if(vmStateCount === 0 && userVms.length > 0){
+      history.redirect(
+        require("../index.js").HostDashboardPage,
+        {
+          screen: this.screen,
+          layout: this.layout,
+          id: hostId
+        },
+        this.done
+      );
+      TerminalNotification.success(this.screen, "All VMs migrated to host "+hostId+" successfully");
+    }
+    else if(vmStateCount > 0 && vmStateCount !== userVms.length){
+      TerminalNotification.warning(this.screen, "Not all VMs were migrated to the host "+hostId+"");
+    }
+    else{
+      TerminalNotification.error(this.screen, error);
+    }
+
+  }
+  
 
   createList() {
     const self = this;

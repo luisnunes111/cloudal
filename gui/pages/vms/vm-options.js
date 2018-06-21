@@ -65,6 +65,7 @@ module.exports = class VmOptionsPage {
         new VmOptionsPrompt(
           this.screen,
           "Are you sure that you want to SHUTDOWN the VM?",
+          this.shutdownVM.bind(this),
           this.shutdownVM.bind(this)
         );
         break;

@@ -245,7 +245,7 @@ exports.monitoringHost = function monitoringHost(id) {
             time: last.LAST_MON_TIME,
             name: last.NAME,
             status: last.STATE,
-            vms: last.VMS.ID.join(", "),
+            vms: last.VMS && last.VMS.ID.join(", "),
             runningVms: last.HOST_SHARE.RUNNING_VMS,
             stats: {
               cpu_usage: last.HOST_SHARE.CPU_USAGE,
