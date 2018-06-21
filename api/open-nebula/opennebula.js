@@ -6,6 +6,20 @@ const one = new OpenNebula(
   options.opennebula.ip
 );
 
+function getLoggedUserInfo() {
+  return new Promise((resolve, reject) => {
+    const user = one.getUser(-1);
+    user.info(function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  }).catch(err => new Error(err));
+}
+exports.getLoggedUserInfo = getLoggedUserInfo;
+
 exports.getAllVMs = function getAllVMs() {
   return new Promise((resolve, reject) => {
     one.getVMs(function(err, data) {
@@ -24,10 +38,16 @@ exports.createVM = function createVM(
   vcpu,
   templateId = 0
 ) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    let context = "";
+
     const template = one.getTemplate(templateId);
-    const context =
-      'CONTEXT=[NETWORK="YES", SSH_PUBLIC_KEY="root[SSH_PUBLIC_KEY]"]\n';
+    const userData = await getLoggedUserInfo();
+    if (userData) {
+      const ssh_key = userData.USER.TEMPLATE.SSH_PUBLIC_KEY;
+      context =
+        'CONTEXT=[NETWORK="YES", SSH_PUBLIC_KEY="' + ssh_key + '"]\n' || "";
+    }
     template.instantiate(
       name,
       undefined,

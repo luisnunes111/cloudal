@@ -83,7 +83,7 @@ module.exports = class HostsListPage {
     });
     this.list.insertItem(0, "------------NEW HOST------------");
 
-    this.list.on("select", function (data) {
+    this.list.on("select", function(data) {
       const index = self.list.selected;
       self.onHostSelect(index);
     });
