@@ -1,11 +1,11 @@
 const blessed = require("blessed");
-const client = require("../../api/open-nebula/opennebula.js");
-const history = require("../../lib/configs/history.js");
-const options = require("./../../configurations.json");
+const client = require("../../../api/open-nebula/opennebula.js");
+const history = require("../../../lib/configs/history.js");
+const options = require("../../../configurations.json");
 const fs = require("fs");
 const path = require("path");
 
-const TerminalNotification = require("../../lib/components/notifications.js");
+const TerminalNotification = require("../../../lib/components/notifications.js");
 
 module.exports = class ConfigurationsPage {
   constructor(state) {
@@ -189,16 +189,16 @@ module.exports = class ConfigurationsPage {
     });
 
     // Event management
-    this.submitButton.on("press", function() {
+    this.submitButton.on("press", function () {
       self.form.submit();
     });
-    this.cancelButton.on("press", function() {
+    this.cancelButton.on("press", function () {
       self.form.reset();
     });
 
     this.form.on("submit", data => {
       //PARA MELHORAR
-      const filePath = path.join(__dirname, "../..", "configurations.json");
+      const filePath = path.join(__dirname, "../../..", "configurations.json");
 
       fs.readFile(filePath, "utf8", (err, fileData) => {
         if (err) {
@@ -217,8 +217,7 @@ module.exports = class ConfigurationsPage {
           const json = JSON.stringify(newOptions); //convert it back to json
           fs.writeFile(filePath, json, "utf8", () => {
             history.redirect(
-              require("./../index.js").Home,
-              {
+              require("../../index.js").Home, {
                 screen: this.screen,
                 layout: this.layout
               },
@@ -233,8 +232,7 @@ module.exports = class ConfigurationsPage {
 
     this.form.on("reset", async () => {
       history.redirect(
-        require("./../index.js").Home,
-        {
+        require("./../index.js").Home, {
           screen: this.screen,
           layout: this.layout
         },

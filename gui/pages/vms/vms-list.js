@@ -1,6 +1,6 @@
 const blessed = require("blessed");
-const client = require("../api/open-nebula/opennebula");
-const history = require("../lib/configs/history.js");
+const client = require("../../../api/open-nebula/opennebula.js");
+const history = require("../../../lib/configs/history.js");
 const chalk = require("chalk");
 
 // const VmCreatePage = require("./vm-create.js");
@@ -39,7 +39,7 @@ module.exports = class VmsListPage {
         screen: this.screen,
         layout: this.layout
       }; //redirect para o create
-      history.redirect(require("./index.js").VmCreatePage, state, function () {
+      history.redirect(require("../../index.js").VmCreatePage, state, function () {
         self.done();
       });
     } else {
@@ -48,7 +48,7 @@ module.exports = class VmsListPage {
         layout: this.layout,
         id: this.VMs[index - 1].ID
       }; //redirect para as options
-      history.redirect(require("./index.js").VmOptionsPage, state, function () {
+      history.redirect(require("../../index.js").VmOptionsPage, state, function () {
         self.done();
       });
     }

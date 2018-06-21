@@ -1,8 +1,8 @@
 const blessed = require("blessed");
-const client = require("../api/open-nebula/opennebula");
-const history = require("../lib/configs/history.js");
+const client = require("../../../api/open-nebula/opennebula.js");
+const history = require("../../../lib/configs/history.js");
 const chalk = require('chalk');
-const TerminalNotification = require("../lib/components/notifications.js");
+const TerminalNotification = require("../../../lib/components/notifications.js");
 
 module.exports = class VmInfoPage {
   constructor(state) {

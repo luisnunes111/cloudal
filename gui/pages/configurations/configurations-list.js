@@ -1,6 +1,6 @@
 const blessed = require("blessed");
-const history = require("../../lib/configs/history.js");
-const options = require("./../../configurations.json");
+const history = require("../../../lib/configs/history.js");
+const options = require("../../../configurations.json");
 const chalk = require("chalk");
 
 
@@ -33,7 +33,7 @@ module.exports = class ConfigurationsListPage {
 
   onProviderSelect(index) {
     history.redirect(
-      require("./../index.js").ConfigurationsPage, {
+      require("../../index.js").ConfigurationsPage, {
         screen: this.screen,
         layout: this.layout,
         id: index

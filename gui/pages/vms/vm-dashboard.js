@@ -1,7 +1,7 @@
 const blessed = require("blessed");
 const contrib = require("blessed-contrib");
-const client = require("../api/open-nebula/opennebula");
-const history = require("../lib/configs/history.js");
+const client = require("../../../api/open-nebula/opennebula.js");
+const history = require("../../../lib/configs/history.js");
 
 module.exports = class VmDashboardPage {
   constructor(state) {
@@ -63,10 +63,16 @@ module.exports = class VmDashboardPage {
       const memory =
         ((parseInt(lastStat.memory) / 1024) * 100) / templateMemory;
 
-      this.cpuDonut.setData([{ percent: cpu, label: "CPU", color: "cyan" }]);
-      this.memoryDonut.setData([
-        { percent: memory, label: "Memory", color: "cyan" }
-      ]);
+      this.cpuDonut.setData([{
+        percent: cpu,
+        label: "CPU",
+        color: "cyan"
+      }]);
+      this.memoryDonut.setData([{
+        percent: memory,
+        label: "Memory",
+        color: "cyan"
+      }]);
     }
     // this.networkGraph.setData([net_tx, net_rx]);
     this.screen.render();
@@ -235,7 +241,11 @@ module.exports = class VmDashboardPage {
       arcWidth: 3,
       remainColor: "black",
       yPadding: 2,
-      data: [{ percent: 77, label: "CPU", color: "green" }]
+      data: [{
+        percent: 77,
+        label: "CPU",
+        color: "green"
+      }]
     });
 
     this.memoryDonut = contrib.donut({
@@ -247,7 +257,11 @@ module.exports = class VmDashboardPage {
       arcWidth: 3,
       remainColor: "black",
       yPadding: 2,
-      data: [{ percent: 45, label: "Memory", color: "cyan" }]
+      data: [{
+        percent: 45,
+        label: "Memory",
+        color: "cyan"
+      }]
     });
 
     this.box.append(this.cpuDonut);
