@@ -1,15 +1,16 @@
 const blessed = require("blessed");
-const client = require("../../api/open-nebula/opennebula");
-const history = require("../../lib/configs/history.js");
+const client = require("../../../api/open-nebula/opennebula");
+const history = require("../../../lib/configs/history.js");
+const chalk = require("chalk");
 
-module.exports = class OptionsPage {
+module.exports = class HostsListPage {
   constructor(state) {
     this.screen = state.screen;
     this.layout = state.layout;
     this.box = undefined;
     this.list = undefined;
-    this.options = ["My VM's", "My Hosts", "Configurations"];
 
+    this.hosts = [];
     this.init();
 
     this.done = this.done.bind(this);
@@ -18,42 +19,47 @@ module.exports = class OptionsPage {
   init() {
     this.createBox();
     this.createList();
+    this.loadList();
   }
 
-  onOptionsSelect(index) {
+  async loadList() {
+    this.hosts = await client.getAllHosts();
+
+    if (this.hosts) {
+      this.hosts.map((host, index) =>
+        this.list.insertItem(index + 1, host.NAME.toString())
+      );
+      this.list.select(0);
+      this.screen.render();
+      this.list.focus();
+    }
+  }
+
+  onHostSelect(index) {
     const self = this;
 
-    switch (index) {
-      case 0:
-        history.redirect(
-          require("./../index.js").VmsListPage,
-          {
-            screen: this.screen,
-            layout: this.layout
-          },
-          this.done
-        );
-        break;
-      case 1:
-        history.redirect(
-          require("./../index.js").HostsListPage,
-          {
-            screen: this.screen,
-            layout: this.layout
-          },
-          this.done
-        );
-        break;
-      case 2:
-        history.redirect(
-          require("./../index.js").ConfigurationsListPage,
-          {
-            screen: this.screen,
-            layout: this.layout
-          },
-          this.done
-        );
-        break;
+    //if NEW option was selected
+    if (index === 0) {
+      const state = {
+        screen: this.screen,
+        layout: this.layout
+      }; //redirect para o create
+      history.redirect(
+        require("./../../index.js").HostCreatePage,
+        state,
+        this.done.bind(this)
+      );
+    } else {
+      const state = {
+        screen: this.screen,
+        layout: this.layout,
+        id: this.hosts[index - 1].ID
+      }; //redirect para a dashboard
+      history.redirect(
+        require("./../../index.js").HostDashboardPage,
+        state,
+        this.done.bind(this)
+      );
     }
   }
 
@@ -72,11 +78,11 @@ module.exports = class OptionsPage {
       fg: "white",
       bg: "grey"
     });
-    this.list.setItems(this.options);
+    this.list.insertItem(0, "------------NEW HOST------------");
 
     this.list.on("select", function(data) {
       const index = self.list.selected;
-      self.onOptionsSelect(index);
+      self.onHostSelect(index);
     });
 
     this.list.key("z", (ch, key) => {

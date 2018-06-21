@@ -37,7 +37,8 @@ module.exports = class VmOptionsPage {
     switch (index) {
       case 0:
         history.redirect(
-          require("./index.js").VmInfoPage, {
+          require("./index.js").VmInfoPage,
+          {
             screen: this.screen,
             layout: this.layout,
             id: this.vmID
@@ -47,7 +48,8 @@ module.exports = class VmOptionsPage {
         break;
       case 1:
         history.redirect(
-          require("./index.js").VmDashboardPage, {
+          require("./index.js").VmDashboardPage,
+          {
             screen: this.screen,
             layout: this.layout,
             id: this.vmID
@@ -74,7 +76,6 @@ module.exports = class VmOptionsPage {
         new VmOptionsPrompt(
           this.screen,
           "Are you sure that you want to SHUTDOWN the VM?",
-          this.shutdownVM.bind(this),
           this.shutdownVM.bind(this)
         );
         break;
@@ -102,7 +103,8 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("./index.js").VmsListPage, {
+        require("./index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },
@@ -119,7 +121,8 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("./index.js").VmsListPage, {
+        require("./index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },
@@ -136,7 +139,8 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("./index.js").VmsListPage, {
+        require("./index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },
@@ -153,7 +157,8 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("./index.js").VmsListPage, {
+        require("./index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },
@@ -170,7 +175,8 @@ module.exports = class VmOptionsPage {
       TerminalNotification.error(this.screen, res.message);
     } else {
       history.redirect(
-        require("./index.js").VmsListPage, {
+        require("./index.js").VmsListPage,
+        {
           screen: this.screen,
           layout: this.layout
         },
@@ -197,7 +203,7 @@ module.exports = class VmOptionsPage {
     });
     this.list.setItems(this.options);
 
-    this.list.on("select", function (data) {
+    this.list.on("select", function(data) {
       const index = self.list.selected;
       self.optionsNavigation(index);
     });
